@@ -1,0 +1,30 @@
+services:
+  # Python ML Backend Web Service
+  - type: web
+    name: skyguard-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn Backend.ml_api_server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+
+  # Frontend TanStack Start Web Service
+  - type: web
+    name: skyguard-frontend
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NITRO_PRESET
+        value: node-server
+      - key: VITE_ML_API_URL
+        sync: false
