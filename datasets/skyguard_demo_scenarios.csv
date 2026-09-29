@@ -1,0 +1,7 @@
+scenario,station_id,timestamp_or_window,affected_parameter,injection_description
+SPIKE,HYD_AWS_01,2026-09-04 10:00:00+00:00,temperature,Single-step +11.5°C jump followed by recovery
+FROZEN_SENSOR,BLR_AWS_02,2026-09-05 06:00:00+00:00 → 12:00:00+00:00,humidity,Humidity variance = 0.000 across 7 readings
+DRIFT,DEL_AWS_03,2026-09-03 12:00:00+00:00 → 2026-09-04 17:00:00+00:00,temperature,Gradual +3.2°C cumulative drift
+MISSING_DATA,HYD_AWS_01,2026-09-06 14:00:00+00:00,pressure,Null core value
+CORRUPTED_DATA,HYD_AWS_01,2026-09-06 15:00:00+00:00,temperature,Temperature = 999°C violates physical bounds
+MULTIVARIATE_INCONSISTENCY,BLR_AWS_02,2026-09-07 11:00:00+00:00,all_core_variables,Plausible individual values but unusual joint feature pattern

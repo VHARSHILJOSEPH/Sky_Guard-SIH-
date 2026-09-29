@@ -1,0 +1,7 @@
+station_id,station_name,state,district,latitude,longitude,elevation_m,base_temp_c,base_hum_pct,base_baro_hpa,cluster_id
+43189,Vijayawada (AWS014),Andhra Pradesh,NTR,16.5062,80.648,25.0,32.4,64.0,1008.2,DELTA_CLUSTER
+AWS002,Guntur (AWS002),Andhra Pradesh,Guntur,16.3067,80.4365,33.0,32.1,63.5,1007.8,DELTA_CLUSTER
+AWS004,Machilipatnam (AWS004),Andhra Pradesh,Krishna,16.1875,81.1389,4.0,30.5,75.0,1010.5,DELTA_CLUSTER
+43150,Visakhapatnam (AWS008),Andhra Pradesh,Visakhapatnam,17.6868,83.2185,15.0,29.8,78.0,1012.4,NORTH_COAST
+43245,Tirupati (AWS021),Andhra Pradesh,Tirupati,13.6288,79.4192,161.0,34.1,52.0,1004.8,SOUTH_INLAND
+HYD_AWS_01,Hyderabad (AWS030),Telangana,Hyderabad,17.385,78.4867,542.0,31.8,61.4,1008.7,DECCAN_PLATEAU

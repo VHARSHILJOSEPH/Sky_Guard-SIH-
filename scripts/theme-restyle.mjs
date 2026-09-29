@@ -1,0 +1,166 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const files = [
+  "src/routes/index.tsx",
+  "src/routes/station.tsx",
+  "src/routes/diagnostics.tsx",
+  "src/routes/sensors.tsx",
+  "src/routes/admin.tsx",
+].map((f) => path.resolve("e:/SIH", f));
+
+const pairs = [
+  ["bg-white border border-slate-200/80 rounded-xl p-5 shadow-xs", "glass-panel p-5"],
+  ["bg-white border border-slate-200/80 rounded-xl p-4 shadow-xs", "glass-panel p-4"],
+  [
+    "bg-white border border-slate-200/80 hover:border-slate-300 rounded-xl p-4 shadow-xs",
+    "glass-metric p-4",
+  ],
+  [
+    "bg-white border border-slate-200/80 hover:border-slate-300 rounded-xl p-3.5 shadow-xs",
+    "glass-metric p-3.5",
+  ],
+  [
+    "bg-white border rounded-xl p-3.5 shadow-xs relative flex flex-col justify-between transition-all",
+    "glass-metric relative flex flex-col justify-between p-3.5",
+  ],
+  [
+    "p-3.5 rounded-xl border bg-white shadow-xs text-left transition-all cursor-pointer",
+    "glass-metric p-3.5 text-left cursor-pointer",
+  ],
+  ["p-4 rounded-xl border shadow-xs", "glass-panel p-4"],
+  ["bg-[#e5eeff] p-0.5 rounded-lg border border-slate-200/70", "sg-seg p-0.5"],
+  ["bg-[#f8f9ff] border border-slate-200/60", "glass-well"],
+  ["bg-[#f8f9ff] border border-slate-200/80", "glass-well"],
+  ["bg-[#f8f9ff] border border-slate-200/70", "glass-well"],
+  ["bg-[#f8f9ff]", "glass-well"],
+  ["bg-[#e5eeff]", "sg-seg"],
+  ["text-[#0b1c30]", "text-foreground"],
+  ["text-[#006194]", "text-accent"],
+  ["bg-[#006194]", "bg-accent"],
+  ["accent-[#006194]", "accent-teal-400"],
+  ["focus:border-[#006194]", "focus:border-teal-300/60"],
+  ["focus:ring-[#006194]", "focus:ring-teal-300/50"],
+  ["ring-[#006194]", "ring-teal-400/70"],
+  ["border-[#006194]", "border-teal-400/70"],
+  ["hover:text-[#006194]", "hover:text-teal-200"],
+  ['stroke="#006194"', 'stroke="#5eead4"'],
+  ['stopColor={isSpike ? "#ef4444" : "#006194"}', 'stopColor={isSpike ? "#f87171" : "#5eead4"}'],
+  ['stroke={isSpike ? "#ef4444" : "#006194"}', 'stroke={isSpike ? "#f87171" : "#5eead4"}'],
+  ['fill={isSpike ? "#ef4444" : "#006194"}', 'fill={isSpike ? "#f87171" : "#5eead4"}'],
+  ['stroke: "#006194"', 'stroke: "#5eead4"'],
+  ['stroke: isSpike ? "#ef4444" : "#006194"', 'stroke: isSpike ? "#f87171" : "#5eead4"'],
+  ['fontFamily="JetBrains Mono"', 'fontFamily="IBM Plex Mono"'],
+  ["border-slate-200/80", "border-white/10"],
+  ["border-slate-200/70", "border-white/10"],
+  ["border-slate-200/60", "border-white/8"],
+  ["border-slate-100", "border-white/8"],
+  ["border-slate-200", "border-white/10"],
+  ["border-slate-50", "border-white/5"],
+  ["divide-slate-100", "divide-white/8"],
+  ["hover:bg-slate-50", "hover:bg-white/5"],
+  ["hover:bg-[#f8f9ff]", "hover:bg-white/5"],
+  ["bg-slate-100", "bg-white/10"],
+  ["text-slate-500", "text-muted-foreground"],
+  ["text-slate-400", "text-muted-foreground"],
+  ["text-slate-600", "text-foreground/70"],
+  ["text-slate-300", "text-white/25"],
+  ["text-slate-700", "text-foreground/80"],
+  ["text-slate-800", "text-foreground/85"],
+  ["hover:text-slate-900", "hover:text-white"],
+  ["text-slate-900", "text-foreground"],
+  ["bg-white/90", "bg-black/25"],
+  ["bg-white ", "bg-white/8 "],
+  ['bg-white"', 'bg-white/8"'],
+  ["border border-slate-300", "border border-white/12"],
+  ["bg-white border", "bg-white/8 border"],
+
+  ["bg-emerald-50/90", "bg-emerald-500/12"],
+  ["bg-emerald-50/20", "bg-emerald-500/10"],
+  ["bg-emerald-50", "bg-emerald-500/12"],
+  ["bg-emerald-100/60", "bg-emerald-500/15"],
+  ["bg-emerald-100", "bg-emerald-500/18"],
+  ["text-emerald-950", "text-emerald-50"],
+  ["text-emerald-900", "text-emerald-100"],
+  ["text-emerald-800", "text-emerald-200"],
+  ["text-emerald-700", "text-emerald-300"],
+  ["border-emerald-300", "border-emerald-400/30"],
+  ["border-emerald-200", "border-emerald-400/25"],
+
+  ["bg-amber-50/70", "bg-amber-500/12"],
+  ["bg-amber-50/20", "bg-amber-500/10"],
+  ["bg-amber-50", "bg-amber-500/12"],
+  ["bg-amber-100/80", "bg-amber-500/18"],
+  ["text-amber-950", "text-amber-50"],
+  ["text-amber-900", "text-amber-100"],
+  ["text-amber-800", "text-amber-200"],
+  ["text-amber-700", "text-amber-200"],
+  ["border-amber-200", "border-amber-400/25"],
+  ["border-amber-400", "border-amber-400/50"],
+
+  ["bg-red-50/20", "bg-red-500/10"],
+  ["bg-red-50", "bg-red-500/12"],
+  ["bg-red-100/80", "bg-red-500/18"],
+  ["bg-red-100/70", "bg-red-500/16"],
+  ["bg-red-100", "bg-red-500/18"],
+  ["text-red-950", "text-red-50"],
+  ["text-red-900", "text-red-100"],
+  ["text-red-800", "text-red-200"],
+  ["text-red-700", "text-red-300"],
+  ["text-red-500", "text-red-300"],
+  ["border-red-400", "border-red-400/50"],
+  ["border-red-300", "border-red-400/35"],
+  ["border-red-200", "border-red-400/25"],
+
+  ["bg-sky-50/80", "bg-cyan-500/10"],
+  ["bg-sky-50", "bg-cyan-500/12"],
+  ["text-sky-950", "text-cyan-50"],
+  ["text-sky-900", "text-cyan-100"],
+  ["text-sky-800", "text-cyan-200"],
+  ["text-sky-700", "text-cyan-300"],
+  ["text-sky-600", "text-cyan-300"],
+  ["border-sky-200/80", "border-cyan-400/20"],
+  ["border-sky-200/70", "border-cyan-400/20"],
+  ["border-sky-200", "border-cyan-400/25"],
+
+  ["bg-orange-50", "bg-orange-400/12"],
+  ["text-orange-800", "text-orange-200"],
+  ["text-orange-600", "text-orange-300"],
+  ["border-orange-300", "border-orange-400/30"],
+  ["border-orange-200", "border-orange-400/25"],
+  ["bg-orange-100", "bg-orange-400/18"],
+
+  ["bg-cyan-50", "bg-cyan-400/12"],
+  ["border-cyan-200", "border-cyan-400/25"],
+
+  ["bg-teal-50", "bg-teal-400/12"],
+  ["text-teal-700", "text-teal-300"],
+  ["border-teal-200", "border-teal-400/25"],
+
+  ["bg-blue-50", "bg-sky-400/12"],
+  ["text-blue-700", "text-sky-300"],
+  ["text-blue-600", "text-sky-300"],
+  ["border-blue-200", "border-sky-400/25"],
+
+  ["bg-violet-50", "bg-violet-400/12"],
+  ["text-violet-700", "text-violet-300"],
+  ["border-violet-200", "border-violet-400/25"],
+
+  ["bg-purple-50", "bg-violet-400/12"],
+  ["text-purple-900", "text-violet-100"],
+  ["text-purple-700", "text-violet-200"],
+  ["border-purple-200", "border-violet-400/25"],
+
+  ["h-8 pl-3 pr-8 rounded-lg bg-white/8", "h-8 pl-3 pr-8 rounded-xl bg-white/6"],
+  ["rounded-lg bg-[#f8f9ff]", "rounded-xl glass-well"],
+  ["bg-[#e5eeff] border", "sg-seg border"],
+];
+
+for (const file of files) {
+  let src = fs.readFileSync(file, "utf8");
+  for (const [from, to] of pairs) {
+    src = src.split(from).join(to);
+  }
+  fs.writeFileSync(file, src);
+  console.log("updated", path.basename(file));
+}

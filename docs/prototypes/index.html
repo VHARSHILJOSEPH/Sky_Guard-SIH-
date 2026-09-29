@@ -1,0 +1,1857 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SkyGuard AI — Operational AWS Anomaly Detection Console</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Material Symbols Outlined -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS with Forms & Container Queries -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              tertiary: "#00628d",
+              primary: "#006194",
+              "on-secondary": "#ffffff",
+              secondary: "#565e74",
+              "on-primary": "#ffffff",
+              surface: "#f8f9ff",
+              "secondary-fixed": "#dae2fd",
+              "on-error": "#ffffff",
+              "surface-variant": "#d3e4fe",
+              "inverse-on-surface": "#eaf1ff",
+              "tertiary-fixed-dim": "#89ceff",
+              background: "#f8f9ff",
+              error: "#ba1a1a",
+              "inverse-primary": "#93ccff",
+              "on-error-container": "#93000a",
+              "on-primary-fixed": "#001d31",
+              "on-primary-fixed-variant": "#004b73",
+              "on-primary-container": "#fdfcff",
+              "secondary-fixed-dim": "#bec6e0",
+              "surface-container-high": "#dce9ff",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed": "#001e2f",
+              "on-surface": "#0b1c30",
+              "on-secondary-fixed-variant": "#3f465c",
+              "tertiary-container": "#007cb1",
+              "on-tertiary-fixed-variant": "#004c6e",
+              "outline-variant": "#bfc7d2",
+              "surface-tint": "#006398",
+              "surface-container-highest": "#d3e4fe",
+              "surface-dim": "#cbdbf5",
+              "error-container": "#ffdad6",
+              "primary-fixed-dim": "#93ccff",
+              "on-tertiary-container": "#fcfcff",
+              "primary-fixed": "#cce5ff",
+              "surface-container-low": "#eff4ff",
+              "on-secondary-container": "#5c647a",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#e5eeff",
+              "on-background": "#0b1c30",
+              "tertiary-fixed": "#c9e6ff",
+              "on-secondary-fixed": "#131b2e",
+              outline: "#707881",
+              "inverse-surface": "#213145",
+              "surface-bright": "#f8f9ff",
+              "on-surface-variant": "#3f4850",
+              "primary-container": "#007bb9",
+              "secondary-container": "#dae2fd",
+            },
+            borderRadius: {
+              DEFAULT: "0.125rem",
+              lg: "0.25rem",
+              xl: "0.5rem",
+              full: "0.75rem",
+            },
+            spacing: {
+              "header-height": "3.5rem",
+              "gutter-sm": "0.5rem",
+              "gutter-xl": "1.5rem",
+              "sidebar-width-expanded": "15rem",
+              "gutter-md": "0.75rem",
+              "gutter-xs": "0.25rem",
+              "gutter-lg": "1rem",
+              "container-padding": "1.25rem",
+            },
+            fontFamily: {
+              "body-lg": ["Inter", "sans-serif"],
+              "label-numeric-md": ["JetBrains Mono", "monospace"],
+              "body-sm": ["Inter", "sans-serif"],
+              "label-numeric-sm": ["JetBrains Mono", "monospace"],
+              "label-numeric-lg": ["JetBrains Mono", "monospace"],
+              "headline-sm": ["Inter", "sans-serif"],
+              "headline-lg": ["Inter", "sans-serif"],
+              "body-md": ["Inter", "sans-serif"],
+              "caption-caps": ["Inter", "sans-serif"],
+              "headline-xl": ["Inter", "sans-serif"],
+              "headline-md": ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 20;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1;
+      }
+      @keyframes subtle-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.35;
+          transform: scale(1.15);
+        }
+      }
+      .live-pulse {
+        animation: subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      .alert-glow {
+        box-shadow:
+          0 0 0 2px #ef4444,
+          0 4px 14px -2px rgba(239, 68, 68, 0.25);
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-md antialiased selection:bg-primary selection:text-on-primary min-w-[1280px]"
+  >
+    <!-- ==================== SIMPLIFIED PRODUCTION SIDEBAR ==================== -->
+    <aside
+      aria-label="Main Navigation"
+      class="fixed top-0 left-0 h-screen w-sidebar-width-expanded z-40 bg-[#090d16] border-r border-slate-800/80 select-none flex flex-col justify-between p-3.5"
+    >
+      <div class="flex flex-col gap-4">
+        <!-- Top Brand -->
+        <div class="flex items-center gap-3 px-1.5 py-2">
+          <div
+            class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-xs"
+          >
+            <span class="material-symbols-outlined text-[19px]">sensors</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-sm font-bold tracking-tight text-white leading-tight"
+              >SkyGuard AI</span
+            >
+            <span class="text-[11px] font-medium text-slate-400">AWS Monitoring</span>
+          </div>
+        </div>
+        <!-- Navigation Links Only: Dashboard (active), Live Monitoring, Anomalies -->
+        <nav class="flex flex-col gap-1 text-xs">
+          <a
+            aria-current="page"
+            class="flex items-center gap-2.5 px-3 py-2 bg-primary text-white rounded font-medium shadow-xs"
+            href="#dashboard"
+            id="nav-dashboard"
+          >
+            <span class="material-symbols-outlined text-[18px]">space_dashboard</span>
+            <span>Dashboard</span>
+          </a>
+          <a
+            class="flex items-center gap-2.5 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/60 rounded font-medium transition-colors"
+            href="#telemetry"
+            id="nav-live-monitoring"
+          >
+            <span class="material-symbols-outlined text-[18px]">insights</span>
+            <span>Live Monitoring</span>
+          </a>
+          <a
+            class="flex items-center justify-between px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/60 rounded font-medium transition-colors"
+            href="#anomalies-section"
+            id="nav-anomalies"
+          >
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[18px]">warning_amber</span>
+              <span>Anomalies</span>
+            </div>
+            <span
+              class="inline-flex items-center justify-center px-1.5 py-0.2 text-[11px] font-mono font-bold bg-red-600 text-white rounded-full min-w-[18px]"
+              id="nav-anomaly-badge"
+              >3</span
+            >
+          </a>
+        </nav>
+      </div>
+      <!-- Bottom System Status -->
+      <div
+        class="px-2 py-3 border-t border-slate-800/70 flex items-center gap-2 text-xs text-slate-300"
+      >
+        <span class="w-2 h-2 rounded-full bg-emerald-500 live-pulse" id="rail-status-dot"></span>
+        <span class="font-medium" id="rail-status-text">System Online</span>
+      </div>
+    </aside>
+    <!-- ==================== TOP BAR / HEADER ==================== -->
+    <header
+      class="fixed top-0 right-0 left-sidebar-width-expanded h-header-height z-30 bg-surface-container-lowest border-b border-outline-variant/60 flex items-center justify-between px-gutter-xl"
+    >
+      <div class="flex items-center gap-3">
+        <!-- Interactive Station Selector -->
+        <label class="sr-only" for="station-select">Select Station</label>
+        <div class="relative">
+          <select
+            aria-label="Select AWS Station"
+            class="h-8 pl-3 pr-8 rounded-lg bg-surface hover:bg-slate-100 border border-outline-variant text-[13px] font-semibold text-on-surface transition-colors cursor-pointer focus:ring-1 focus:ring-primary focus:border-primary"
+            id="station-select"
+          >
+            <option value="43189">Vijayawada (AWS014)</option>
+            <option value="43150">Visakhapatnam (AWS008)</option>
+            <option value="43245">Tirupati (AWS021)</option>
+          </select>
+        </div>
+        <div class="h-4 w-px bg-outline-variant"></div>
+        <!-- Station Coordinates & Meta -->
+        <span class="text-xs text-secondary font-mono" id="station-meta-coords"
+          >16.5062° N, 80.6480° E • Vijayawada AWS-014</span
+        >
+      </div>
+      <!-- Right Controls: Demo Trigger Dropdown & System Clock -->
+      <div class="flex items-center gap-3">
+        <!-- Secondary Unobtrusive Demo / Test Dropdown -->
+        <div class="relative">
+          <label class="sr-only" for="demo-test-select">Demo Scenario Trigger</label>
+          <div
+            class="flex items-center gap-1.5 px-2.5 py-1 bg-surface rounded-lg border border-outline-variant text-xs font-medium text-slate-700"
+          >
+            <span class="material-symbols-outlined text-sky-600 text-[16px]">science</span>
+            <span>Demo / Test:</span>
+            <select
+              aria-label="Demo simulation scenario"
+              class="bg-transparent text-xs font-semibold text-primary border-none p-0 pr-4 focus:ring-0 cursor-pointer"
+              id="demo-test-select"
+              onchange="runDemoScenario(this.value)"
+            >
+              <option value="">Choose Scenario...</option>
+              <option value="TEMP_SPIKE">Simulate Temp Spike</option>
+              <option value="FROZEN">Simulate Frozen Reading</option>
+              <option value="LOST">Toggle Connection Lost</option>
+              <option value="RESET">Reset to Normal</option>
+            </select>
+          </div>
+        </div>
+        <div class="h-4 w-px bg-outline-variant"></div>
+        <span class="text-xs font-mono font-medium text-secondary" id="clock-display"
+          >12:42:08 PM IST</span
+        >
+      </div>
+    </header>
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <main
+      class="ml-sidebar-width-expanded mt-header-height min-h-screen p-container-padding bg-background pb-10"
+      id="dashboard"
+    >
+      <!-- TOAST NOTIFICATION (Restrained banner, dismissible) -->
+      <div
+        aria-live="polite"
+        class="hidden mb-4 items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg shadow-xs"
+        id="anomaly-toast"
+        role="alert"
+      >
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-red-600 text-[18px]">warning</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-red-900">Anomaly detected:</span>
+            <span class="text-xs text-red-800" id="toast-message"
+              >Temperature spike (+23.1°C) at Vijayawada (AWS014)</span
+            >
+            <span
+              class="text-[11px] font-mono text-red-700 bg-red-100/80 px-1.5 py-0.5 rounded border border-red-200"
+              id="toast-time"
+              >12:43:02 PM</span
+            >
+          </div>
+        </div>
+        <button
+          aria-label="Dismiss alert"
+          class="text-red-500 hover:text-red-800 transition-colors p-1"
+          onclick="dismissToast()"
+          type="button"
+        >
+          <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+      </div>
+      <!-- ==================== SECTION 1: HEADER & CONNECTION STATUS ==================== -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+        <div>
+          <h1 class="text-xl font-bold text-on-surface tracking-tight">
+            Real-Time Weather Monitoring
+          </h1>
+          <p class="text-xs text-secondary mt-0.5">
+            AI-powered anomaly detection for Automatic Weather Stations
+          </p>
+        </div>
+        <!-- Connection Status Pill Box with 4 Distinct States -->
+        <div
+          class="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant/60 px-3.5 py-2 rounded-lg shadow-xs"
+          id="connection-pill-box"
+        >
+          <div class="flex items-center gap-2" id="connection-pill">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 live-pulse" id="conn-dot"></span>
+            <span class="text-xs font-bold text-emerald-800 tracking-wider" id="conn-label"
+              >LIVE DATA</span
+            >
+          </div>
+          <span class="text-outline-variant text-xs">|</span>
+          <span class="text-xs text-secondary" id="last-updated-wrapper"
+            >Last updated:
+            <strong class="text-on-surface font-semibold font-mono" id="last-updated-text"
+              >12:42:08 PM</strong
+            ></span
+          >
+        </div>
+      </div>
+      <!-- ==================== SECTION 2: THREE TOP METRIC CARDS ONLY ==================== -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-md mb-5">
+        <!-- Card 1: Temperature (°C) -->
+        <div
+          class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs relative flex flex-col justify-between transition-all"
+          id="kpi-temp-card"
+        >
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-[18px]">device_thermostat</span>
+              </div>
+              <div>
+                <span class="text-[11px] font-semibold text-secondary uppercase tracking-wider"
+                  >Temperature</span
+                >
+                <p class="text-[11px] text-slate-500">Surface Air</p>
+              </div>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
+              id="temp-badge"
+            >
+              Normal
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <div>
+              <div class="text-2xl font-bold font-mono text-on-surface flex items-baseline gap-1">
+                <span id="kpi-temp-val">32.4</span>
+                <span class="text-xs text-secondary font-normal font-sans">°C</span>
+              </div>
+              <span
+                class="text-[11px] text-emerald-700 flex items-center gap-1 mt-0.5"
+                id="temp-update-text"
+              >
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Updated just now
+              </span>
+            </div>
+            <!-- Sparkline -->
+            <div class="w-28 h-9">
+              <svg
+                class="w-full h-full"
+                fill="none"
+                preserveaspectratio="none"
+                viewbox="0 0 120 40"
+              >
+                <path
+                  d="M0,28 Q15,22 30,26 T60,20 T90,24 T120,16"
+                  fill="none"
+                  id="spark-temp-line"
+                  stroke="#f97316"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+                <circle
+                  cx="120"
+                  cy="16"
+                  fill="#f97316"
+                  id="spark-temp-dot"
+                  r="3"
+                  stroke="#ffffff"
+                  stroke-width="1.5"
+                ></circle>
+              </svg>
+            </div>
+          </div>
+          <div
+            class="mt-2.5 pt-2 border-t border-outline-variant/40 flex items-center justify-between text-[11px] text-secondary"
+          >
+            <span>Safe Baseline: 30.0°C – 34.0°C</span>
+            <span class="text-emerald-700 font-semibold" id="temp-card-substatus">Nominal</span>
+          </div>
+        </div>
+        <!-- Card 2: Atmospheric Pressure (hPa) -->
+        <div
+          class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs relative flex flex-col justify-between transition-all"
+          id="kpi-press-card"
+        >
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg bg-sky-50 text-primary border border-sky-200 flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-[18px]">speed</span>
+              </div>
+              <div>
+                <span class="text-[11px] font-semibold text-secondary uppercase tracking-wider"
+                  >Atmospheric Pressure</span
+                >
+                <p class="text-[11px] text-slate-500">Barometric Sea-Level</p>
+              </div>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
+              id="press-badge"
+            >
+              Normal
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <div>
+              <div class="text-2xl font-bold font-mono text-on-surface flex items-baseline gap-1">
+                <span id="kpi-baro-val">1008.2</span>
+                <span class="text-xs text-secondary font-normal font-sans">hPa</span>
+              </div>
+              <span class="text-[11px] text-emerald-700 flex items-center gap-1 mt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Updated just now
+              </span>
+            </div>
+            <!-- Sparkline -->
+            <div class="w-28 h-9">
+              <svg
+                class="w-full h-full"
+                fill="none"
+                preserveaspectratio="none"
+                viewbox="0 0 120 40"
+              >
+                <path
+                  d="M0,18 Q20,16 40,22 T80,24 T100,28 T120,26"
+                  fill="none"
+                  stroke="#006194"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+                <circle
+                  cx="120"
+                  cy="26"
+                  fill="#006194"
+                  r="3"
+                  stroke="#ffffff"
+                  stroke-width="1.5"
+                ></circle>
+              </svg>
+            </div>
+          </div>
+          <div
+            class="mt-2.5 pt-2 border-t border-outline-variant/40 flex items-center justify-between text-[11px] text-secondary"
+          >
+            <span>Safe Baseline: 990 – 1025 hPa</span>
+            <span class="text-emerald-700 font-semibold">Nominal</span>
+          </div>
+        </div>
+        <!-- Card 3: Relative Humidity (%) -->
+        <div
+          class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs relative flex flex-col justify-between transition-all"
+          id="kpi-hum-card"
+        >
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-lg bg-cyan-50 text-cyan-700 border border-cyan-200 flex items-center justify-center"
+              >
+                <span class="material-symbols-outlined text-[18px]">humidity_percentage</span>
+              </div>
+              <div>
+                <span class="text-[11px] font-semibold text-secondary uppercase tracking-wider"
+                  >Relative Humidity</span
+                >
+                <p class="text-[11px] text-slate-500">Ambient Moisture</p>
+              </div>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
+              id="hum-badge"
+            >
+              Normal
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between mt-1">
+            <div>
+              <div class="text-2xl font-bold font-mono text-on-surface flex items-baseline gap-1">
+                <span id="kpi-hum-val">64</span>
+                <span class="text-xs text-secondary font-normal font-sans">%</span>
+              </div>
+              <span class="text-[11px] text-emerald-700 flex items-center gap-1 mt-0.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Updated just now
+              </span>
+            </div>
+            <!-- Sparkline -->
+            <div class="w-28 h-9">
+              <svg
+                class="w-full h-full"
+                fill="none"
+                preserveaspectratio="none"
+                viewbox="0 0 120 40"
+              >
+                <path
+                  d="M0,26 Q25,29 50,22 T90,19 T120,15"
+                  fill="none"
+                  stroke="#0891b2"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+                <circle
+                  cx="120"
+                  cy="15"
+                  fill="#0891b2"
+                  r="3"
+                  stroke="#ffffff"
+                  stroke-width="1.5"
+                ></circle>
+              </svg>
+            </div>
+          </div>
+          <div
+            class="mt-2.5 pt-2 border-t border-outline-variant/40 flex items-center justify-between text-[11px] text-secondary"
+          >
+            <span>Safe Baseline: 20% – 90%</span>
+            <span class="text-emerald-700 font-semibold">Nominal</span>
+          </div>
+        </div>
+      </div>
+      <!-- ==================== SECTION 3: TWO-COLUMN MAIN WORKSPACE ==================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-md items-start">
+        <!-- LEFT COLUMN: LIVE SENSOR READINGS CHART (8 COLS ≈ 67%) -->
+        <div class="lg:col-span-8 flex flex-col gap-gutter-md" id="telemetry">
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs"
+          >
+            <!-- Controls Header -->
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-outline-variant/40"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 live-pulse"></span>
+                <h2 class="text-sm font-bold text-on-surface">Live Sensor Readings</h2>
+              </div>
+              <!-- Parameter Tabs: [Temperature], [Pressure], [Humidity], [All] -->
+              <div
+                class="flex items-center gap-1 bg-surface-container p-0.5 rounded-lg border border-outline-variant/60 text-xs"
+              >
+                <button
+                  class="px-2.5 py-1 rounded font-semibold bg-primary text-white shadow-xs transition-all"
+                  id="param-temp"
+                  onclick="setActiveParameter('temperature')"
+                  type="button"
+                >
+                  Temperature
+                </button>
+                <button
+                  class="px-2.5 py-1 rounded font-medium text-secondary hover:text-on-surface transition-all"
+                  id="param-press"
+                  onclick="setActiveParameter('pressure')"
+                  type="button"
+                >
+                  Pressure
+                </button>
+                <button
+                  class="px-2.5 py-1 rounded font-medium text-secondary hover:text-on-surface transition-all"
+                  id="param-hum"
+                  onclick="setActiveParameter('humidity')"
+                  type="button"
+                >
+                  Humidity
+                </button>
+                <button
+                  class="px-2.5 py-1 rounded font-medium text-secondary hover:text-on-surface transition-all"
+                  id="param-all"
+                  onclick="setActiveParameter('all')"
+                  type="button"
+                >
+                  All
+                </button>
+              </div>
+            </div>
+            <!-- Chart Sub-bar: Legend & Time Window Pills -->
+            <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs">
+              <div class="flex items-center gap-3.5">
+                <div class="flex items-center gap-1.5 text-on-surface">
+                  <span class="w-3 h-0.5 bg-primary rounded" id="legend-line-sample"></span>
+                  <span class="font-medium" id="legend-param-title">Active Telemetry (°C)</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-secondary" id="legend-threshold-box">
+                  <span
+                    class="w-3 h-2 bg-emerald-500/15 border border-dashed border-emerald-500 rounded-xs"
+                  ></span>
+                  <span id="threshold-label-text">Safe Threshold (30.0°C – 34.0°C)</span>
+                </div>
+                <div class="hidden items-center gap-1.5 text-red-600" id="chart-anomaly-legend">
+                  <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                  <span>Flagged Incident</span>
+                </div>
+              </div>
+              <!-- Time Window Pills: [Last 15 Minutes], [Last 1 Hour], [Last 6 Hours] -->
+              <div
+                class="flex items-center gap-1 bg-surface-container p-0.5 rounded-lg border border-outline-variant/60 text-[11px] font-mono"
+              >
+                <button
+                  class="px-2 py-0.5 rounded text-secondary hover:text-on-surface transition-colors"
+                  id="btn-win-15m"
+                  onclick="setChartWindow('15m')"
+                  type="button"
+                >
+                  Last 15 Minutes
+                </button>
+                <button
+                  class="px-2 py-0.5 rounded font-semibold bg-surface-container-lowest text-primary shadow-xs border border-outline-variant/50"
+                  id="btn-win-1h"
+                  onclick="setChartWindow('1h')"
+                  type="button"
+                >
+                  Last 1 Hour
+                </button>
+                <button
+                  class="px-2 py-0.5 rounded text-secondary hover:text-on-surface transition-colors"
+                  id="btn-win-6h"
+                  onclick="setChartWindow('6h')"
+                  type="button"
+                >
+                  Last 6 Hours
+                </button>
+              </div>
+            </div>
+            <!-- SVG Time-Series Chart Container -->
+            <div
+              class="relative w-full h-80 bg-surface-bright border border-outline-variant/40 rounded-lg p-2 overflow-hidden select-none"
+              id="chart-container"
+            >
+              <!-- Normalized comparison callout banner if 'All' is active -->
+              <div
+                class="hidden absolute top-2 left-12 right-4 bg-sky-50/95 border border-sky-200 rounded px-2.5 py-1 text-xs text-primary font-medium z-10 flex items-center justify-between"
+                id="all-scale-banner"
+              >
+                <span
+                  ><strong>Normalized Comparison Index (0–100%)</strong>: Relative variance across
+                  all 3 parameters scaled to 0–100% envelope.</span
+                >
+                <span class="text-[10px] font-mono text-slate-500">Multi-axis View</span>
+              </div>
+              <!-- Safe Baseline Envelope -->
+              <div
+                class="absolute left-10 right-4 top-[70px] h-[95px] bg-emerald-500/[0.06] border-y border-dashed border-emerald-500/30 pointer-events-none z-0"
+                id="safe-band-div"
+              >
+                <span
+                  class="absolute right-2 top-1 text-[10px] font-mono text-emerald-700/80 font-semibold tracking-wider"
+                  >SAFE BASELINE ENVELOPE</span
+                >
+              </div>
+              <svg
+                class="w-full h-full"
+                fill="none"
+                id="main-chart-svg"
+                preserveaspectratio="none"
+                viewbox="0 0 740 280"
+              >
+                <!-- Y-Axis Grid Lines & Labels -->
+                <g id="y-axis-grid">
+                  <line
+                    stroke="#cbd5e1"
+                    stroke-dasharray="3 3"
+                    stroke-width="0.8"
+                    x1="45"
+                    x2="725"
+                    y1="30"
+                    y2="30"
+                  ></line>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="y-lbl-4"
+                    text-anchor="end"
+                    x="40"
+                    y="34"
+                  >
+                    36°C
+                  </text>
+                  <line
+                    stroke="#94a3b8"
+                    stroke-dasharray="2 2"
+                    stroke-width="1"
+                    x1="45"
+                    x2="725"
+                    y1="75"
+                    y2="75"
+                  ></line>
+                  <text
+                    fill="#059669"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    font-weight="600"
+                    id="y-lbl-3"
+                    text-anchor="end"
+                    x="40"
+                    y="79"
+                  >
+                    34°C
+                  </text>
+                  <line
+                    stroke="#cbd5e1"
+                    stroke-dasharray="3 3"
+                    stroke-width="0.8"
+                    x1="45"
+                    x2="725"
+                    y1="120"
+                    y2="120"
+                  ></line>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="y-lbl-2"
+                    text-anchor="end"
+                    x="40"
+                    y="124"
+                  >
+                    32°C
+                  </text>
+                  <line
+                    stroke="#94a3b8"
+                    stroke-dasharray="2 2"
+                    stroke-width="1"
+                    x1="45"
+                    x2="725"
+                    y1="165"
+                    y2="165"
+                  ></line>
+                  <text
+                    fill="#059669"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    font-weight="600"
+                    id="y-lbl-1"
+                    text-anchor="end"
+                    x="40"
+                    y="169"
+                  >
+                    30°C
+                  </text>
+                  <line
+                    stroke="#cbd5e1"
+                    stroke-dasharray="3 3"
+                    stroke-width="0.8"
+                    x1="45"
+                    x2="725"
+                    y1="210"
+                    y2="210"
+                  ></line>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="y-lbl-0"
+                    text-anchor="end"
+                    x="40"
+                    y="214"
+                  >
+                    28°C
+                  </text>
+                </g>
+                <!-- X-Axis Baseline -->
+                <line stroke="#94a3b8" stroke-width="1.2" x1="45" x2="725" y1="240" y2="240"></line>
+                <!-- X-Axis Time Labels -->
+                <g id="x-axis-labels">
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="x-lbl-0"
+                    x="60"
+                    y="258"
+                  >
+                    11:42
+                  </text>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="x-lbl-1"
+                    x="190"
+                    y="258"
+                  >
+                    12:00
+                  </text>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="x-lbl-2"
+                    x="320"
+                    y="258"
+                  >
+                    12:15
+                  </text>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="x-lbl-3"
+                    x="450"
+                    y="258"
+                  >
+                    12:30
+                  </text>
+                  <text
+                    fill="#64748b"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    id="x-lbl-4"
+                    x="580"
+                    y="258"
+                  >
+                    12:40
+                  </text>
+                  <text
+                    fill="#006194"
+                    font-family="JetBrains Mono"
+                    font-size="11"
+                    font-weight="600"
+                    id="x-lbl-live"
+                    text-anchor="end"
+                    x="715"
+                    y="258"
+                  >
+                    12:42 (Now)
+                  </text>
+                </g>
+                <!-- Gradient Defs -->
+                <defs>
+                  <lineargradient id="chart-area-grad" x1="0" x2="0" y1="0" y2="1">
+                    <stop
+                      id="grad-stop-1"
+                      offset="0%"
+                      stop-color="#006194"
+                      stop-opacity="0.22"
+                    ></stop>
+                    <stop
+                      id="grad-stop-2"
+                      offset="100%"
+                      stop-color="#006194"
+                      stop-opacity="0.00"
+                    ></stop>
+                  </lineargradient>
+                </defs>
+                <!-- Area Path -->
+                <path
+                  d="M 60,118 C 90,115 120,125 150,119 C 180,113 210,105 240,112 C 270,119 300,122 330,116 C 360,110 390,108 420,114 C 450,120 480,112 510,109 C 540,106 570,115 600,112 C 630,109 660,113 690,111 L 690,240 L 60,240 Z"
+                  fill="url(#chart-area-grad)"
+                  id="chart-area-path"
+                ></path>
+                <!-- Multi-line paths (used in "All" view) -->
+                <path
+                  class="hidden"
+                  d="M 60,135 C 100,132 150,138 200,134 C 250,129 300,132 350,128 C 400,125 450,131 500,129 C 550,126 600,130 690,127"
+                  fill="none"
+                  id="path-press-all"
+                  stroke="#007cb1"
+                  stroke-dasharray="4 2"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+                <path
+                  class="hidden"
+                  d="M 60,148 C 100,152 150,140 200,143 C 250,145 300,138 350,140 C 400,135 450,139 500,137 C 550,134 600,138 690,135"
+                  fill="none"
+                  id="path-hum-all"
+                  stroke="#0891b2"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+                <!-- Primary Telemetry Line -->
+                <path
+                  d="M 60,118 C 90,115 120,125 150,119 C 180,113 210,105 240,112 C 270,119 300,122 330,116 C 360,110 390,108 420,114 C 450,120 480,112 510,109 C 540,106 570,115 600,112 C 630,109 660,113 690,111"
+                  fill="none"
+                  id="chart-line-path"
+                  stroke="#006194"
+                  stroke-linecap="round"
+                  stroke-width="2.5"
+                ></path>
+                <!-- Simulated Anomaly Flag Pin (Dynamic) -->
+                <g class="hidden" id="chart-anomaly-flag" transform="translate(130, 20)">
+                  <line
+                    stroke="#ef4444"
+                    stroke-dasharray="2 2"
+                    stroke-width="1.2"
+                    x1="0"
+                    x2="0"
+                    y1="15"
+                    y2="220"
+                  ></line>
+                  <rect
+                    fill="#fee2e2"
+                    height="18"
+                    rx="3"
+                    stroke="#fca5a5"
+                    stroke-width="1"
+                    width="70"
+                    x="-35"
+                    y="0"
+                  ></rect>
+                  <text
+                    fill="#991b1b"
+                    font-family="JetBrains Mono"
+                    font-size="9"
+                    font-weight="700"
+                    text-anchor="middle"
+                    x="0"
+                    y="12"
+                  >
+                    SPIKE 55.3°C
+                  </text>
+                </g>
+                <!-- Hover / Inspection Hairline Tooltip -->
+                <g id="chart-inspect-group" transform="translate(640, 0)">
+                  <line
+                    stroke="#006194"
+                    stroke-dasharray="2 2"
+                    stroke-width="1"
+                    x1="0"
+                    x2="0"
+                    y1="20"
+                    y2="240"
+                  ></line>
+                  <circle
+                    cx="0"
+                    cy="112"
+                    fill="#006194"
+                    id="inspect-dot"
+                    r="4.5"
+                    stroke="#ffffff"
+                    stroke-width="2"
+                  ></circle>
+                  <!-- Inspection Box -->
+                  <g transform="translate(-160, 48)">
+                    <rect fill="#0b1c30" height="42" opacity="0.95" rx="4" width="150"></rect>
+                    <text
+                      fill="#94a3b8"
+                      font-family="JetBrains Mono"
+                      font-size="10"
+                      id="inspect-time"
+                      x="8"
+                      y="16"
+                    >
+                      12:41:30 PM
+                    </text>
+                    <text
+                      fill="#ffffff"
+                      font-family="JetBrains Mono"
+                      font-size="12"
+                      font-weight="600"
+                      id="inspect-val"
+                      x="8"
+                      y="32"
+                    >
+                      Temp: 32.4°C
+                    </text>
+                    <text
+                      fill="#10b981"
+                      font-family="Inter"
+                      font-size="10"
+                      font-weight="600"
+                      id="inspect-tag"
+                      text-anchor="end"
+                      x="142"
+                      y="32"
+                    >
+                      ● Normal
+                    </text>
+                  </g>
+                </g>
+                <!-- Live Head Dot -->
+                <circle
+                  cx="690"
+                  cy="111"
+                  fill="#006194"
+                  id="live-head-dot"
+                  r="5"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                ></circle>
+                <circle
+                  class="live-pulse"
+                  cx="690"
+                  cy="111"
+                  fill="none"
+                  r="10"
+                  stroke="#38bdf8"
+                  stroke-width="1.5"
+                ></circle>
+              </svg>
+            </div>
+            <!-- Bottom Telemetry Summary Metric Row -->
+            <div
+              class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-3 border-t border-outline-variant/40 text-xs font-mono"
+            >
+              <div class="flex flex-col">
+                <span class="text-secondary text-[10px] uppercase font-sans">Mean Reading</span>
+                <span class="font-semibold text-on-surface" id="stat-mean">32.18 °C</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-secondary text-[10px] uppercase font-sans">Peak Amplitude</span>
+                <span class="font-semibold text-on-surface" id="stat-peak">32.64 °C</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-secondary text-[10px] uppercase font-sans">Safe Envelope</span>
+                <span class="font-semibold text-emerald-700" id="stat-range">Within Bounds</span>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-secondary text-[10px] uppercase font-sans">Telemetry Rate</span>
+                <span class="font-semibold text-on-surface">1 Hz Real-Time</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- RIGHT COLUMN: AI ANOMALY DETECTION & RECENT ANOMALIES (4 COLS ≈ 33%) -->
+        <div class="lg:col-span-4 flex flex-col gap-gutter-md">
+          <!-- CARD A: AI ANOMALY DETECTION CARD (Plain Operational Terms Only) -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs flex flex-col gap-3.5"
+            id="ai-anomaly-card"
+          >
+            <div
+              class="flex items-center justify-between pb-2.5 border-b border-outline-variant/40"
+            >
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+                <h2 class="text-sm font-bold text-on-surface">AI Anomaly Detection</h2>
+              </div>
+              <span
+                class="text-[11px] font-mono text-secondary bg-surface-container px-2 py-0.5 rounded border border-outline-variant/50"
+              >
+                Operational
+              </span>
+            </div>
+            <!-- DEFAULT STATE: NORMAL -->
+            <div class="flex flex-col gap-3" id="ai-view-normal">
+              <div
+                class="p-3.5 rounded-lg bg-emerald-50/90 border border-emerald-200 flex items-center gap-3"
+              >
+                <div
+                  class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center justify-center shrink-0"
+                >
+                  <span class="material-symbols-outlined text-[24px]">check_circle</span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-emerald-800 tracking-wide"
+                      >● STATUS: NORMAL</span
+                    >
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 live-pulse"></span>
+                  </div>
+                  <p class="text-xs text-emerald-950 mt-0.5">
+                    No anomaly detected in the latest observation.
+                  </p>
+                </div>
+              </div>
+              <!-- Plain Operational Latest AI Analysis -->
+              <div
+                class="p-2.5 rounded bg-surface border border-outline-variant/50 flex flex-col gap-1 text-xs"
+              >
+                <span class="text-[11px] font-semibold text-secondary uppercase tracking-wider"
+                  >Latest AI Analysis:</span
+                >
+                <p class="text-on-surface font-medium leading-relaxed" id="ai-analysis-line">
+                  Temperature — <span class="text-emerald-700 font-semibold">Normal</span> |
+                  Pressure — <span class="text-emerald-700 font-semibold">Normal</span> | Humidity —
+                  <span class="text-emerald-700 font-semibold">Normal</span>
+                </p>
+                <span class="text-[11px] text-secondary font-mono mt-1" id="ai-last-analysis-time"
+                  >Last analysis: Just now</span
+                >
+              </div>
+            </div>
+            <!-- ANOMALY STATE (Clean Operational Alert) -->
+            <div class="hidden flex flex-col gap-3" id="ai-view-alert">
+              <div
+                class="p-3.5 rounded-lg bg-red-50 border border-red-300 flex flex-col gap-2.5 shadow-xs"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-600 live-pulse"></span>
+                    <span class="text-xs font-bold text-red-900 tracking-wide"
+                      >● ANOMALY DETECTED</span
+                    >
+                  </div>
+                  <span
+                    class="text-[10px] font-bold bg-red-600 text-white px-2 py-0.5 rounded font-mono"
+                    id="alert-severity-badge"
+                  >
+                    HIGH SEVERITY
+                  </span>
+                </div>
+                <div>
+                  <h4 class="text-sm font-bold text-red-950" id="alert-title">Temperature Spike</h4>
+                  <div
+                    class="grid grid-cols-2 gap-2 text-xs font-mono bg-white/90 p-2 rounded border border-red-200 mt-1.5"
+                  >
+                    <div>
+                      <span class="text-secondary text-[10px] uppercase block font-sans"
+                        >Observed Value</span
+                      >
+                      <span class="font-bold text-red-700" id="alert-observed">55.3 °C</span>
+                    </div>
+                    <div>
+                      <span class="text-secondary text-[10px] uppercase block font-sans"
+                        >Expected Range</span
+                      >
+                      <span class="text-slate-700" id="alert-expected">31.0 – 34.0 °C</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-xs text-red-900 leading-snug">
+                  <strong class="font-semibold text-red-950">Reason:</strong>
+                  <span id="alert-reason"
+                    >Sudden deviation from the recent temperature pattern.</span
+                  >
+                </div>
+                <div
+                  class="flex items-center justify-between pt-1 text-[11px] font-mono text-red-800"
+                >
+                  <span>Detected: <strong id="alert-detected-time">12:43:02 PM</strong></span>
+                  <span>Severity: <strong id="alert-severity-text">HIGH</strong></span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-1 pt-2 border-t border-red-200">
+                  <button
+                    class="px-2.5 py-1.5 rounded bg-white hover:bg-red-50 text-red-800 border border-red-300 text-xs font-medium transition-colors text-center"
+                    onclick="acknowledgeAnomaly()"
+                    type="button"
+                  >
+                    Acknowledge
+                  </button>
+                  <button
+                    class="px-2.5 py-1.5 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition-colors text-center shadow-xs"
+                    onclick="resetToNormalState()"
+                    type="button"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- CARD B: RECENT ANOMALIES FEED -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-4 shadow-xs flex flex-col gap-3"
+            id="anomalies-section"
+          >
+            <div class="flex items-center justify-between pb-2 border-b border-outline-variant/40">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-[18px]">history</span>
+                <h2 class="text-sm font-bold text-on-surface">Recent Anomalies</h2>
+              </div>
+              <span class="text-xs font-semibold text-primary">Station Feed</span>
+            </div>
+            <!-- Dynamic Anomaly Feed Items with Text + Color Severity Badges -->
+            <div class="flex flex-col gap-2.5" id="anomalies-list">
+              <!-- Rendered by JavaScript State Engine -->
+            </div>
+            <!-- Bottom Summary -->
+            <div
+              class="p-2 rounded bg-surface-container border border-outline-variant/50 flex items-center justify-between text-xs text-secondary font-mono"
+            >
+              <span>Incident Count</span>
+              <span class="font-semibold text-on-surface" id="incident-summary-count"
+                >3 Alerts Logged</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- ==================== PRODUCTION FRONTEND ARCHITECTURE & JAVASCRIPT STATE ENGINE ==================== -->
+    <script>
+      /**
+       * MOCK_DATA ARCHITECTURE
+       * Structured exactly for direct FastAPI/WebSocket backend hydration.
+       */
+      const MOCK_DATA = {
+        stations: [
+          {
+            id: "43189",
+            name: "Vijayawada (AWS014)",
+            coords: "16.5062° N, 80.6480° E",
+            baseTemp: 32.4,
+            baseBaro: 1008.2,
+            baseHum: 64,
+          },
+          {
+            id: "43150",
+            name: "Visakhapatnam (AWS008)",
+            coords: "17.6868° N, 83.2185° E",
+            baseTemp: 29.8,
+            baseBaro: 1012.4,
+            baseHum: 78,
+          },
+          {
+            id: "43245",
+            name: "Tirupati (AWS021)",
+            coords: "13.6288° N, 79.4192° E",
+            baseTemp: 34.1,
+            baseBaro: 1004.8,
+            baseHum: 52,
+          },
+        ],
+        currentReading: {
+          stationId: "43189",
+          timestamp: "12:42:08 PM",
+          temperature: 32.4,
+          pressure: 1008.2,
+          humidity: 64,
+          safeRanges: {
+            temperature: { min: 30.0, max: 34.0, unit: "°C" },
+            pressure: { min: 990.0, max: 1025.0, unit: "hPa" },
+            humidity: { min: 20, max: 90, unit: "%" },
+          },
+        },
+        anomalies: [
+          {
+            id: "a1",
+            time: "12:28 PM",
+            type: "Temperature Spike",
+            severity: "HIGH",
+            parameter: "Temperature",
+            observed: "55.3 °C",
+            expected: "31.0 – 34.0 °C",
+            description: "55.3 °C detected at sensor probe (out-of-bounds).",
+          },
+          {
+            id: "a2",
+            time: "11:14 AM",
+            type: "Humidity Anomaly",
+            severity: "MEDIUM",
+            parameter: "Humidity",
+            observed: "98 %",
+            expected: "40% – 85%",
+            description: "98% detected (sudden saturation without precipitation).",
+          },
+          {
+            id: "a3",
+            time: "10:47 AM",
+            type: "Frozen Reading",
+            severity: "HIGH",
+            parameter: "Temperature",
+            observed: "31.200 °C",
+            expected: "Natural fluctuation",
+            description: "Temperature unchanged for abnormal duration (>45m).",
+          },
+        ],
+      };
+
+      /**
+       * WEATHERSERVICE
+       * Direct interface abstraction ready for FastAPI REST endpoints:
+       * e.g., fetch(`/api/stations`), fetch(`/api/stations/${id}/latest`)
+       */
+      const WeatherService = {
+        async getStations() {
+          return Promise.resolve(MOCK_DATA.stations);
+        },
+        async getCurrentReading(stationId) {
+          const st = MOCK_DATA.stations.find((s) => s.id === stationId) || MOCK_DATA.stations[0];
+          return Promise.resolve({
+            ...MOCK_DATA.currentReading,
+            stationId: st.id,
+            temperature: st.baseTemp,
+            pressure: st.baseBaro,
+            humidity: st.baseHum,
+            timestamp: AppState.getCurrentTimeString(),
+          });
+        },
+        async getHistoricalReadings(stationId, range = "1h") {
+          return Promise.resolve({ stationId, range, points: 24 });
+        },
+        async getRecentAnomalies(stationId) {
+          return Promise.resolve(MOCK_DATA.anomalies);
+        },
+      };
+
+      /**
+       * REALTIME MANAGER
+       * WebSocket abstraction ready for ws:// backend integration:
+       * e.g., const socket = new WebSocket(`ws://localhost:8000/ws/telemetry/${stationId}`)
+       */
+      const RealtimeManager = {
+        socket: null,
+        readingCallbacks: [],
+        anomalyCallbacks: [],
+        connect(stationId) {
+          // Ready for WebSocket instantiation:
+          // this.socket = new WebSocket(`wss://api.skyguard.ai/ws/${stationId}`);
+          // this.socket.onmessage = (e) => this.dispatch(JSON.parse(e.data));
+        },
+        disconnect() {
+          if (this.socket) {
+            this.socket.close();
+            this.socket = null;
+          }
+        },
+        onReading(callback) {
+          this.readingCallbacks.push(callback);
+        },
+        onAnomaly(callback) {
+          this.anomalyCallbacks.push(callback);
+        },
+        emitReading(data) {
+          this.readingCallbacks.forEach((cb) => cb(data));
+        },
+        emitAnomaly(anomaly) {
+          this.anomalyCallbacks.forEach((cb) => cb(anomaly));
+        },
+      };
+
+      /**
+       * CORE REACTIVE APPLICATION STATE
+       */
+      const AppState = {
+        currentStation: MOCK_DATA.stations[0],
+        connectionStatus: "LIVE", // 'LIVE' | 'CONNECTING' | 'LOST' | 'NO_DATA'
+        activeParameter: "temperature", // 'temperature' | 'pressure' | 'humidity' | 'all'
+        chartWindow: "1h", // '15m' | '1h' | '6h'
+        activeAnomaly: null,
+        anomalies: [...MOCK_DATA.anomalies],
+        lastUpdatedTimestamp: "12:42:08 PM",
+
+        getCurrentTimeString() {
+          return new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+        },
+      };
+
+      /**
+       * DOM ELEMENTS CACHE
+       */
+      const DOM = {
+        stationSelect: document.getElementById("station-select"),
+        stationMetaCoords: document.getElementById("station-meta-coords"),
+        clockDisplay: document.getElementById("clock-display"),
+        lastUpdatedText: document.getElementById("last-updated-text"),
+        connDot: document.getElementById("conn-dot"),
+        connLabel: document.getElementById("conn-label"),
+        connWrapper: document.getElementById("last-updated-wrapper"),
+        railDot: document.getElementById("rail-status-dot"),
+        railText: document.getElementById("rail-status-text"),
+        toast: document.getElementById("anomaly-toast"),
+        toastMessage: document.getElementById("toast-message"),
+        toastTime: document.getElementById("toast-time"),
+        kpiTempVal: document.getElementById("kpi-temp-val"),
+        kpiBaroVal: document.getElementById("kpi-baro-val"),
+        kpiHumVal: document.getElementById("kpi-hum-val"),
+        kpiTempCard: document.getElementById("kpi-temp-card"),
+        kpiPressCard: document.getElementById("kpi-press-card"),
+        kpiHumCard: document.getElementById("kpi-hum-card"),
+        tempBadge: document.getElementById("temp-badge"),
+        tempSubstatus: document.getElementById("temp-card-substatus"),
+        aiViewNormal: document.getElementById("ai-view-normal"),
+        aiViewAlert: document.getElementById("ai-view-alert"),
+        alertSeverityBadge: document.getElementById("alert-severity-badge"),
+        alertTitle: document.getElementById("alert-title"),
+        alertObserved: document.getElementById("alert-observed"),
+        alertExpected: document.getElementById("alert-expected"),
+        alertReason: document.getElementById("alert-reason"),
+        alertDetectedTime: document.getElementById("alert-detected-time"),
+        alertSeverityText: document.getElementById("alert-severity-text"),
+        anomaliesList: document.getElementById("anomalies-list"),
+        incidentSummaryCount: document.getElementById("incident-summary-count"),
+        navAnomalyBadge: document.getElementById("nav-anomaly-badge"),
+        // Chart DOM
+        chartParamButtons: {
+          temperature: document.getElementById("param-temp"),
+          pressure: document.getElementById("param-press"),
+          humidity: document.getElementById("param-hum"),
+          all: document.getElementById("param-all"),
+        },
+        chartWinButtons: {
+          "15m": document.getElementById("btn-win-15m"),
+          "1h": document.getElementById("btn-win-1h"),
+          "6h": document.getElementById("btn-win-6h"),
+        },
+        legendTitle: document.getElementById("legend-param-title"),
+        legendThreshold: document.getElementById("legend-threshold-box"),
+        thresholdLabel: document.getElementById("threshold-label-text"),
+        chartAnomalyLegend: document.getElementById("chart-anomaly-legend"),
+        safeBandDiv: document.getElementById("safe-band-div"),
+        allScaleBanner: document.getElementById("all-scale-banner"),
+        yLabels: [
+          document.getElementById("y-lbl-0"),
+          document.getElementById("y-lbl-1"),
+          document.getElementById("y-lbl-2"),
+          document.getElementById("y-lbl-3"),
+          document.getElementById("y-lbl-4"),
+        ],
+        xLabels: [
+          document.getElementById("x-lbl-0"),
+          document.getElementById("x-lbl-1"),
+          document.getElementById("x-lbl-2"),
+          document.getElementById("x-lbl-3"),
+          document.getElementById("x-lbl-4"),
+        ],
+        chartLinePath: document.getElementById("chart-line-path"),
+        chartAreaPath: document.getElementById("chart-area-path"),
+        pathPressAll: document.getElementById("path-press-all"),
+        pathHumAll: document.getElementById("path-hum-all"),
+        chartAnomalyFlag: document.getElementById("chart-anomaly-flag"),
+        inspectVal: document.getElementById("inspect-val"),
+        statMean: document.getElementById("stat-mean"),
+        statPeak: document.getElementById("stat-peak"),
+      };
+
+      /**
+       * RENDER FUNCTIONS (Declarative UI updates)
+       */
+      function renderConnectionState() {
+        const { connectionStatus, lastUpdatedTimestamp } = AppState;
+        const cards = [DOM.kpiTempCard, DOM.kpiPressCard, DOM.kpiHumCard];
+
+        if (connectionStatus === "LIVE") {
+          DOM.connDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 live-pulse";
+          DOM.connLabel.textContent = "LIVE DATA";
+          DOM.connLabel.className = "text-xs font-bold text-emerald-800 tracking-wider font-mono";
+          DOM.railDot.className = "w-2 h-2 rounded-full bg-emerald-500 live-pulse";
+          DOM.railText.textContent = "System Online";
+          DOM.connWrapper.innerHTML = `Last updated: <strong class="text-on-surface font-semibold font-mono">${lastUpdatedTimestamp}</strong>`;
+          cards.forEach((c) => c.classList.remove("opacity-40", "grayscale"));
+        } else if (connectionStatus === "CONNECTING") {
+          DOM.connDot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 live-pulse";
+          DOM.connLabel.textContent = "CONNECTING...";
+          DOM.connLabel.className = "text-xs font-bold text-amber-800 tracking-wider font-mono";
+          DOM.railDot.className = "w-2 h-2 rounded-full bg-amber-500 live-pulse";
+          DOM.railText.textContent = "Connecting...";
+          DOM.connWrapper.innerHTML = `Syncing telemetry link...`;
+        } else if (connectionStatus === "LOST") {
+          DOM.connDot.className = "w-2.5 h-2.5 rounded-full bg-red-600";
+          DOM.connLabel.textContent = "CONNECTION LOST";
+          DOM.connLabel.className = "text-xs font-bold text-red-800 tracking-wider font-mono";
+          DOM.railDot.className = "w-2 h-2 rounded-full bg-red-500";
+          DOM.railText.textContent = "Connection Lost";
+          DOM.connWrapper.innerHTML = `<span class="text-red-700 font-medium font-mono">Last updated: ${lastUpdatedTimestamp} • Connection lost</span>`;
+        } else if (connectionStatus === "NO_DATA") {
+          DOM.connDot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
+          DOM.connLabel.textContent = "NO DATA";
+          DOM.connLabel.className = "text-xs font-bold text-slate-600 tracking-wider font-mono";
+          DOM.railDot.className = "w-2 h-2 rounded-full bg-slate-400";
+          DOM.railText.textContent = "No Station Data";
+          DOM.connWrapper.innerHTML = `<span class="text-slate-500 font-mono">Sensors Offline</span>`;
+          cards.forEach((c) => c.classList.add("opacity-40", "grayscale"));
+        }
+      }
+
+      function renderStationData() {
+        const s = AppState.currentStation;
+        DOM.stationMetaCoords.textContent = `${s.coords} • ${s.name}`;
+        DOM.kpiTempVal.textContent = s.baseTemp.toFixed(1);
+        DOM.kpiBaroVal.textContent = s.baseBaro.toFixed(1);
+        DOM.kpiHumVal.textContent = Math.round(s.baseHum);
+        DOM.lastUpdatedText.textContent = AppState.lastUpdatedTimestamp;
+      }
+
+      function renderAnomaliesFeed() {
+        DOM.anomaliesList.innerHTML = "";
+        AppState.anomalies.slice(0, 5).forEach((item) => {
+          const isHigh = item.severity === "HIGH";
+          const el = document.createElement("div");
+          el.className = `p-2.5 rounded-lg bg-surface border border-outline-variant/50 hover:border-slate-400 transition-colors flex flex-col gap-1 border-l-4 ${isHigh ? "border-l-red-500" : "border-l-amber-500"}`;
+          el.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold ${isHigh ? "bg-red-100 text-red-800 border border-red-200" : "bg-amber-100 text-amber-900 border border-amber-200"}">
+              <span class="w-1.5 h-1.5 rounded-full ${isHigh ? "bg-red-600" : "bg-amber-500"}"></span> ${item.severity}
+            </span>
+            <span class="text-[11px] font-mono text-secondary">${item.time}</span>
+          </div>
+          <h4 class="text-xs font-bold text-on-surface mt-0.5">${item.type}</h4>
+          <p class="text-xs text-secondary leading-snug">${item.description}</p>
+        `;
+          DOM.anomaliesList.appendChild(el);
+        });
+
+        DOM.navAnomalyBadge.textContent = AppState.anomalies.length;
+        DOM.incidentSummaryCount.textContent = `${AppState.anomalies.length} Alerts Logged`;
+      }
+
+      function renderAiDetectionCard() {
+        if (!AppState.activeAnomaly) {
+          DOM.aiViewNormal.classList.remove("hidden");
+          DOM.aiViewAlert.classList.add("hidden");
+        } else {
+          const a = AppState.activeAnomaly;
+          DOM.aiViewNormal.classList.add("hidden");
+          DOM.aiViewAlert.classList.remove("hidden");
+          DOM.alertSeverityBadge.textContent = `${a.severity} SEVERITY`;
+          DOM.alertTitle.textContent = a.type || "Temperature Spike";
+          DOM.alertObserved.textContent = a.observed;
+          DOM.alertExpected.textContent = a.expected;
+          DOM.alertReason.textContent = a.reason;
+          DOM.alertDetectedTime.textContent = a.time;
+          DOM.alertSeverityText.textContent = a.severity;
+        }
+      }
+
+      /**
+       * CHART VIEW ENGINE
+       */
+      function setActiveParameter(param) {
+        AppState.activeParameter = param;
+
+        // Update Tab Styles
+        Object.keys(DOM.chartParamButtons).forEach((key) => {
+          const btn = DOM.chartParamButtons[key];
+          if (key === param) {
+            btn.className =
+              "px-2.5 py-1 rounded font-semibold bg-primary text-white shadow-xs transition-all";
+          } else {
+            btn.className =
+              "px-2.5 py-1 rounded font-medium text-secondary hover:text-on-surface transition-all";
+          }
+        });
+
+        // Show/Hide Elements based on parameter
+        if (param === "temperature") {
+          DOM.legendTitle.textContent = "Active Telemetry (°C)";
+          DOM.thresholdLabel.textContent = "Safe Threshold (30.0°C – 34.0°C)";
+          DOM.safeBandDiv.classList.remove("hidden");
+          DOM.safeBandDiv.style.top = "70px";
+          DOM.safeBandDiv.style.height = "95px";
+          DOM.allScaleBanner.classList.add("hidden");
+          DOM.pathPressAll.classList.add("hidden");
+          DOM.pathHumAll.classList.add("hidden");
+          DOM.chartLinePath.setAttribute("stroke", "#006194");
+          DOM.chartLinePath.setAttribute(
+            "d",
+            "M 60,118 C 90,115 120,125 150,119 C 180,113 210,105 240,112 C 270,119 300,122 330,116 C 360,110 390,108 420,114 C 450,120 480,112 510,109 C 540,106 570,115 600,112 C 630,109 660,113 690,111",
+          );
+          DOM.chartAreaPath.setAttribute(
+            "d",
+            "M 60,118 C 90,115 120,125 150,119 C 180,113 210,105 240,112 C 270,119 300,122 330,116 C 360,110 390,108 420,114 C 450,120 480,112 510,109 C 540,106 570,115 600,112 C 630,109 660,113 690,111 L 690,240 L 60,240 Z",
+          );
+
+          DOM.yLabels[4].textContent = "36°C";
+          DOM.yLabels[3].textContent = "34°C";
+          DOM.yLabels[2].textContent = "32°C";
+          DOM.yLabels[1].textContent = "30°C";
+          DOM.yLabels[0].textContent = "28°C";
+
+          DOM.statMean.textContent = "32.18 °C";
+          DOM.statPeak.textContent = "32.64 °C";
+          DOM.inspectVal.textContent = "Temp: 32.4°C";
+        } else if (param === "pressure") {
+          DOM.legendTitle.textContent = "Active Telemetry (hPa)";
+          DOM.thresholdLabel.textContent = "Safe Threshold (1000 – 1020 hPa)";
+          DOM.safeBandDiv.classList.remove("hidden");
+          DOM.safeBandDiv.style.top = "65px";
+          DOM.safeBandDiv.style.height = "110px";
+          DOM.allScaleBanner.classList.add("hidden");
+          DOM.pathPressAll.classList.add("hidden");
+          DOM.pathHumAll.classList.add("hidden");
+          DOM.chartLinePath.setAttribute("stroke", "#007cb1");
+          DOM.chartLinePath.setAttribute(
+            "d",
+            "M 60,130 C 90,135 120,128 150,132 C 180,126 210,124 240,127 C 270,131 300,129 330,124 C 360,120 390,125 420,129 C 450,131 480,128 510,125 C 540,124 570,129 600,128 C 630,126 660,127 690,126",
+          );
+          DOM.chartAreaPath.setAttribute(
+            "d",
+            "M 60,130 C 90,135 120,128 150,132 C 180,126 210,124 240,127 C 270,131 300,129 330,124 C 360,120 390,125 420,129 C 450,131 480,128 510,125 C 540,124 570,129 600,128 C 630,126 660,127 690,126 L 690,240 L 60,240 Z",
+          );
+
+          DOM.yLabels[4].textContent = "1025";
+          DOM.yLabels[3].textContent = "1020";
+          DOM.yLabels[2].textContent = "1010";
+          DOM.yLabels[1].textContent = "1000";
+          DOM.yLabels[0].textContent = "990";
+
+          DOM.statMean.textContent = "1008.4 hPa";
+          DOM.statPeak.textContent = "1009.6 hPa";
+          DOM.inspectVal.textContent = "Baro: 1008.2 hPa";
+        } else if (param === "humidity") {
+          DOM.legendTitle.textContent = "Active Telemetry (% RH)";
+          DOM.thresholdLabel.textContent = "Safe Threshold (30% – 85%)";
+          DOM.safeBandDiv.classList.remove("hidden");
+          DOM.safeBandDiv.style.top = "50px";
+          DOM.safeBandDiv.style.height = "130px";
+          DOM.allScaleBanner.classList.add("hidden");
+          DOM.pathPressAll.classList.add("hidden");
+          DOM.pathHumAll.classList.add("hidden");
+          DOM.chartLinePath.setAttribute("stroke", "#0891b2");
+          DOM.chartLinePath.setAttribute(
+            "d",
+            "M 60,140 C 90,145 120,135 150,130 C 180,125 210,135 240,132 C 270,128 300,120 330,122 C 360,126 390,124 420,120 C 450,118 480,122 510,120 C 540,117 570,115 600,118 C 630,116 660,119 690,116",
+          );
+          DOM.chartAreaPath.setAttribute(
+            "d",
+            "M 60,140 C 90,145 120,135 150,130 C 180,125 210,135 240,132 C 270,128 300,120 330,122 C 360,126 390,124 420,120 C 450,118 480,122 510,120 C 540,117 570,115 600,118 C 630,116 660,119 690,116 L 690,240 L 60,240 Z",
+          );
+
+          DOM.yLabels[4].textContent = "90%";
+          DOM.yLabels[3].textContent = "80%";
+          DOM.yLabels[2].textContent = "65%";
+          DOM.yLabels[1].textContent = "40%";
+          DOM.yLabels[0].textContent = "20%";
+
+          DOM.statMean.textContent = "63.4 %";
+          DOM.statPeak.textContent = "67.0 %";
+          DOM.inspectVal.textContent = "Hum: 64 %";
+        } else if (param === "all") {
+          DOM.legendTitle.textContent = "Normalized Index (0–100%)";
+          DOM.thresholdLabel.textContent = "Safe Operational Envelope";
+          DOM.safeBandDiv.classList.remove("hidden");
+          DOM.safeBandDiv.style.top = "45px";
+          DOM.safeBandDiv.style.height = "145px";
+          DOM.allScaleBanner.classList.remove("hidden");
+          DOM.pathPressAll.classList.remove("hidden");
+          DOM.pathHumAll.classList.remove("hidden");
+          DOM.chartLinePath.setAttribute("stroke", "#006194");
+
+          DOM.yLabels[4].textContent = "100%";
+          DOM.yLabels[3].textContent = "75%";
+          DOM.yLabels[2].textContent = "50%";
+          DOM.yLabels[1].textContent = "25%";
+          DOM.yLabels[0].textContent = "0%";
+
+          DOM.statMean.textContent = "Nominal Index";
+          DOM.statPeak.textContent = "Synchronized";
+          DOM.inspectVal.textContent = "Vector: Balanced";
+        }
+      }
+
+      function setChartWindow(win) {
+        AppState.chartWindow = win;
+        Object.keys(DOM.chartWinButtons).forEach((k) => {
+          const btn = DOM.chartWinButtons[k];
+          if (k === win) {
+            btn.className =
+              "px-2 py-0.5 rounded font-semibold bg-surface-container-lowest text-primary shadow-xs border border-outline-variant/50";
+          } else {
+            btn.className =
+              "px-2 py-0.5 rounded text-secondary hover:text-on-surface transition-colors";
+          }
+        });
+
+        if (win === "15m") {
+          DOM.xLabels[0].textContent = "12:28";
+          DOM.xLabels[1].textContent = "12:31";
+          DOM.xLabels[2].textContent = "12:34";
+          DOM.xLabels[3].textContent = "12:37";
+          DOM.xLabels[4].textContent = "12:40";
+        } else if (win === "1h") {
+          DOM.xLabels[0].textContent = "11:42";
+          DOM.xLabels[1].textContent = "12:00";
+          DOM.xLabels[2].textContent = "12:15";
+          DOM.xLabels[3].textContent = "12:30";
+          DOM.xLabels[4].textContent = "12:40";
+        } else if (win === "6h") {
+          DOM.xLabels[0].textContent = "06:45";
+          DOM.xLabels[1].textContent = "08:15";
+          DOM.xLabels[2].textContent = "09:45";
+          DOM.xLabels[3].textContent = "11:15";
+          DOM.xLabels[4].textContent = "12:15";
+        }
+      }
+
+      /**
+       * DEMO & SIMULATION SCENARIO DISPATCHER
+       * Feeds directly through state engine without bypassing architecture.
+       */
+      function runDemoScenario(scenario) {
+        if (!scenario) return;
+        const now = AppState.getCurrentTimeString();
+        const currentStationName = AppState.currentStation.name;
+
+        if (scenario === "TEMP_SPIKE") {
+          AppState.activeAnomaly = {
+            type: "Temperature Spike",
+            severity: "HIGH",
+            observed: "55.3 °C",
+            expected: "31.0 – 34.0 °C",
+            reason: "Sudden deviation from the recent temperature pattern.",
+            time: now,
+          };
+
+          // Update Card UI
+          DOM.kpiTempCard.classList.add("alert-glow");
+          DOM.kpiTempVal.textContent = "55.3";
+          DOM.tempBadge.textContent = "CRITICAL";
+          DOM.tempBadge.className =
+            "inline-flex items-center gap-1 text-[11px] font-mono font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-200";
+          DOM.tempSubstatus.textContent = "Out of Bounds";
+          DOM.tempSubstatus.className = "text-red-700 font-bold";
+
+          // Add to Anomaly Store
+          AppState.anomalies.unshift({
+            id: "temp-" + Date.now(),
+            time: now,
+            type: "Temperature Spike",
+            severity: "HIGH",
+            parameter: "Temperature",
+            observed: "55.3 °C",
+            expected: "31.0 – 34.0 °C",
+            description: `Sudden unphysical spike to 55.3 °C detected at ${currentStationName}.`,
+          });
+
+          // Show SVG Spike Flag
+          DOM.chartAnomalyFlag.classList.remove("hidden");
+          DOM.chartAnomalyLegend.classList.remove("hidden");
+
+          // Trigger Restrained Toast
+          DOM.toastMessage.textContent = `Temperature spike (+23.1°C) at ${currentStationName}`;
+          DOM.toastTime.textContent = now;
+          DOM.toast.style.display = "flex";
+
+          renderAiDetectionCard();
+          renderAnomaliesFeed();
+        } else if (scenario === "FROZEN") {
+          AppState.activeAnomaly = {
+            type: "Frozen Reading",
+            severity: "HIGH",
+            observed: "31.200 °C",
+            expected: "Dynamic gradient",
+            reason: "Temperature unchanged for abnormal duration (>45m).",
+            time: now,
+          };
+
+          DOM.kpiTempCard.classList.add("alert-glow");
+          DOM.tempBadge.textContent = "FROZEN";
+          DOM.tempBadge.className =
+            "inline-flex items-center gap-1 text-[11px] font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200";
+          DOM.tempSubstatus.textContent = "Zero Variance";
+          DOM.tempSubstatus.className = "text-amber-800 font-bold";
+
+          AppState.anomalies.unshift({
+            id: "frozen-" + Date.now(),
+            time: now,
+            type: "Frozen Reading",
+            severity: "HIGH",
+            parameter: "Temperature",
+            observed: "31.200 °C",
+            expected: "Dynamic gradient",
+            description: `Temperature sensor value locked with zero variance for >45m at ${currentStationName}.`,
+          });
+
+          DOM.toastMessage.textContent = `Frozen reading detected at ${currentStationName}`;
+          DOM.toastTime.textContent = now;
+          DOM.toast.style.display = "flex";
+
+          renderAiDetectionCard();
+          renderAnomaliesFeed();
+        } else if (scenario === "LOST") {
+          AppState.connectionStatus = AppState.connectionStatus === "LIVE" ? "LOST" : "LIVE";
+          renderConnectionState();
+        } else if (scenario === "RESET") {
+          resetToNormalState();
+        }
+
+        // Reset dropdown
+        document.getElementById("demo-test-select").value = "";
+      }
+
+      function resetToNormalState() {
+        AppState.activeAnomaly = null;
+        AppState.connectionStatus = "LIVE";
+
+        DOM.kpiTempCard.classList.remove("alert-glow");
+        DOM.kpiTempVal.textContent = AppState.currentStation.baseTemp.toFixed(1);
+        DOM.tempBadge.textContent = "Normal";
+        DOM.tempBadge.className =
+          "inline-flex items-center gap-1 text-[11px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200";
+        DOM.tempSubstatus.textContent = "Nominal";
+        DOM.tempSubstatus.className = "text-emerald-700 font-semibold";
+        DOM.chartAnomalyFlag.classList.add("hidden");
+        DOM.chartAnomalyLegend.classList.add("hidden");
+
+        dismissToast();
+        renderAiDetectionCard();
+        renderConnectionState();
+      }
+
+      function acknowledgeAnomaly() {
+        dismissToast();
+        DOM.alertReason.innerHTML +=
+          ' <span class="text-emerald-700 font-bold font-mono text-[11px]">(Acknowledged)</span>';
+      }
+
+      function dismissToast() {
+        DOM.toast.style.display = "none";
+      }
+
+      /**
+       * INITIALIZATION & EVENT LISTENERS
+       */
+      DOM.stationSelect.addEventListener("change", async (e) => {
+        const stationId = e.target.value;
+        const station = MOCK_DATA.stations.find((s) => s.id === stationId);
+        if (!station) return;
+
+        AppState.currentStation = station;
+        AppState.connectionStatus = "CONNECTING";
+        renderConnectionState();
+
+        const reading = await WeatherService.getCurrentReading(stationId);
+        setTimeout(() => {
+          AppState.connectionStatus = "LIVE";
+          AppState.lastUpdatedTimestamp = reading.timestamp;
+          renderConnectionState();
+          renderStationData();
+        }, 350);
+      });
+
+      // Real-time local clock
+      setInterval(() => {
+        const now = AppState.getCurrentTimeString();
+        DOM.clockDisplay.textContent = `${now} IST`;
+      }, 1000);
+
+      // Initial page hydration
+      document.addEventListener("DOMContentLoaded", () => {
+        renderStationData();
+        renderConnectionState();
+        renderAnomaliesFeed();
+        renderAiDetectionCard();
+      });
+    </script>
+  </body>
+</html>

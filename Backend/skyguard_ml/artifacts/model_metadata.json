@@ -1,0 +1,222 @@
+{
+  "selected_model": "LOF",
+  "model_version": "2.0.0",
+  "hyperparameters": {
+    "n_neighbors": 15,
+    "contamination": 0.03,
+    "metric": "minkowski"
+  },
+  "calibrated_threshold": 0.4,
+  "training_period": {
+    "start": "2026-08-01 00:00:00+00:00",
+    "end": "2026-08-10 23:00:00+00:00"
+  },
+  "validation_metrics": {
+    "precision": 0.1872146118721461,
+    "recall": 0.5394736842105263,
+    "specificity": 0.9405477621910487,
+    "balanced_accuracy": 0.7400107232007875,
+    "f1": 0.27796610169491526,
+    "mcc": 0.2897828432723935,
+    "roc_auc": 0.745945839046514,
+    "pr_auc": 0.11646441394706745,
+    "false_positive_rate": 0.05945223780895124,
+    "false_alarms_per_station_day": 1.4268537074148298,
+    "detection_latency": 0.6,
+    "training_time": 0.07019179999770131,
+    "inference_time": 0.020053500000358326,
+    "mean_anomaly_score": 0.07568595520440931,
+    "true_positives": 41,
+    "false_positives": 178,
+    "true_negatives": 2816,
+    "false_negatives": 35,
+    "sample_count": 3070,
+    "fault_breakdown": {
+      "COMMUNICATION_FAILURE": {
+        "count": 8,
+        "detected": 8,
+        "recall": 1.0
+      },
+      "HUMIDITY_DRIFT": {
+        "count": 9,
+        "detected": 0,
+        "recall": 0.0
+      },
+      "HUMIDITY_SPIKE": {
+        "count": 2,
+        "detected": 0,
+        "recall": 0.0
+      },
+      "PRESSURE_SPIKE": {
+        "count": 15,
+        "detected": 15,
+        "recall": 1.0
+      },
+      "DUPLICATE_DATA": {
+        "count": 7,
+        "detected": 3,
+        "recall": 0.42857142857142855
+      },
+      "MISSING_DATA": {
+        "count": 4,
+        "detected": 0,
+        "recall": 0.0
+      },
+      "MULTIVARIATE_INCONSISTENCY": {
+        "count": 4,
+        "detected": 4,
+        "recall": 1.0
+      },
+      "TEMPERATURE_SPIKE": {
+        "count": 18,
+        "detected": 11,
+        "recall": 0.6111111111111112
+      },
+      "TEMPERATURE_DRIFT": {
+        "count": 9,
+        "detected": 0,
+        "recall": 0.0
+      }
+    },
+    "calibrated_threshold": 0.4
+  },
+  "test_metrics": {
+    "precision": 0.04331087584215592,
+    "recall": 0.9,
+    "specificity": 0.6777957860615883,
+    "balanced_accuracy": 0.7888978930307942,
+    "f1": 0.08264462809917356,
+    "mcc": 0.15377422381501993,
+    "roc_auc": 0.8581393841166938,
+    "pr_auc": 0.12393149686583431,
+    "false_positive_rate": 0.32220421393841164,
+    "false_alarms_per_station_day": 7.73290113452188,
+    "detection_latency": 0.1111111111111111,
+    "training_time": null,
+    "inference_time": 0.020317999998951564,
+    "mean_anomaly_score": 0.3443326240930446,
+    "true_positives": 45,
+    "false_positives": 994,
+    "true_negatives": 2091,
+    "false_negatives": 5,
+    "sample_count": 3135,
+    "fault_breakdown": {
+      "FROZEN_SENSOR": {
+        "count": 6,
+        "detected": 6,
+        "recall": 1.0
+      },
+      "PRESSURE_DRIFT": {
+        "count": 4,
+        "detected": 3,
+        "recall": 0.75
+      },
+      "HUMIDITY_SPIKE": {
+        "count": 17,
+        "detected": 17,
+        "recall": 1.0
+      },
+      "PRESSURE_SPIKE": {
+        "count": 5,
+        "detected": 5,
+        "recall": 1.0
+      },
+      "PHYSICAL_LIMIT_VIOLATION": {
+        "count": 11,
+        "detected": 11,
+        "recall": 1.0
+      },
+      "DUPLICATE_DATA": {
+        "count": 3,
+        "detected": 1,
+        "recall": 0.3333333333333333
+      },
+      "MISSING_DATA": {
+        "count": 4,
+        "detected": 2,
+        "recall": 0.5
+      }
+    }
+  },
+  "feature_list": [
+    "temperature",
+    "humidity",
+    "pressure",
+    "rainfall",
+    "wind_speed",
+    "wind_direction",
+    "latitude",
+    "longitude",
+    "hour",
+    "day_of_year",
+    "month",
+    "season_code",
+    "hour_sin",
+    "hour_cos",
+    "day_of_year_sin",
+    "day_of_year_cos",
+    "elapsed_hours",
+    "temperature_delta",
+    "temperature_rate",
+    "temperature_lag_1",
+    "temperature_lag_2",
+    "temperature_lag_3",
+    "temperature_rolling_mean_3",
+    "temperature_rolling_std_3",
+    "temperature_rolling_mean_6",
+    "temperature_rolling_std_6",
+    "temperature_rolling_mean_12",
+    "temperature_rolling_std_12",
+    "temperature_rolling_mean_24",
+    "temperature_rolling_std_24",
+    "temperature_historical_score",
+    "humidity_delta",
+    "humidity_rate",
+    "humidity_lag_1",
+    "humidity_lag_2",
+    "humidity_lag_3",
+    "humidity_rolling_mean_3",
+    "humidity_rolling_std_3",
+    "humidity_rolling_mean_6",
+    "humidity_rolling_std_6",
+    "humidity_rolling_mean_12",
+    "humidity_rolling_std_12",
+    "humidity_rolling_mean_24",
+    "humidity_rolling_std_24",
+    "humidity_historical_score",
+    "pressure_delta",
+    "pressure_rate",
+    "pressure_lag_1",
+    "pressure_lag_2",
+    "pressure_lag_3",
+    "pressure_rolling_mean_3",
+    "pressure_rolling_std_3",
+    "pressure_rolling_mean_6",
+    "pressure_rolling_std_6",
+    "pressure_rolling_mean_12",
+    "pressure_rolling_std_12",
+    "pressure_rolling_mean_24",
+    "pressure_rolling_std_24",
+    "pressure_historical_score",
+    "temperature_humidity_interaction",
+    "temperature_humidity_deviation",
+    "temperature_pressure_deviation",
+    "humidity_pressure_deviation"
+  ],
+  "feature_count": 63,
+  "selection_score": 0.5938207285368582,
+  "validation_report": {
+    "row_count": 960,
+    "valid_row_count": 0,
+    "invalid_row_count": 960,
+    "summary": {
+      "MISSING_RAINFALL": 960,
+      "MISSING_WIND_SPEED": 960,
+      "MISSING_WIND_DIRECTION": 960,
+      "MISSING_LATITUDE": 960,
+      "MISSING_LONGITUDE": 960
+    }
+  },
+  "autoencoder": "NOT_USED",
+  "confidence_status": "CALIBRATED_V2"
+}

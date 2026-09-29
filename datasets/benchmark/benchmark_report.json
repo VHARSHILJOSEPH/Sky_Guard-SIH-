@@ -1,0 +1,435 @@
+{
+  "metadata": {
+    "benchmark_name": "SkyGuard-Scientific-Benchmark-v1.0",
+    "random_seed": 42,
+    "created_at": "2026-09-14T15:11:48.419491+00:00",
+    "station_count": 6,
+    "total_observations": 6480,
+    "time_range": {
+      "start": "2026-08-01T00:00:00Z",
+      "end": "2026-09-14T23:00:00Z",
+      "total_hours": 1080,
+      "cadence_hours": 1
+    },
+    "split_summary": {
+      "train": {
+        "count": 3888,
+        "percentage": 60.0,
+        "start": "2026-08-01T00:00:00Z",
+        "end": "2026-08-27T23:00:00Z",
+        "clean_normal_only": true
+      },
+      "validation": {
+        "count": 1296,
+        "percentage": 20.0,
+        "start": "2026-08-28T00:00:00Z",
+        "end": "2026-09-05T23:00:00Z",
+        "ground_truth_distribution": {
+          "NORMAL": 1215,
+          "SENSOR_FAULT": 42,
+          "WEATHER_EVENT": 27,
+          "DATA_QUALITY_ISSUE": 12
+        }
+      },
+      "test": {
+        "count": 1296,
+        "percentage": 20.0,
+        "start": "2026-09-06T00:00:00Z",
+        "end": "2026-09-14T23:00:00Z",
+        "ground_truth_distribution": {
+          "NORMAL": 1061,
+          "WEATHER_EVENT": 171,
+          "SENSOR_FAULT": 47,
+          "DATA_QUALITY_ISSUE": 9,
+          "COMMUNICATION_FAULT": 8
+        }
+      }
+    },
+    "class_distribution": {
+      "NORMAL": 6164,
+      "WEATHER_EVENT": 198,
+      "SENSOR_FAULT": 89,
+      "DATA_QUALITY_ISSUE": 21,
+      "COMMUNICATION_FAULT": 8
+    },
+    "fault_type_distribution": {
+      "TEMPERATURE_DRIFT": 18,
+      "FROZEN_SENSOR": 18,
+      "MISSING_DATA": 12,
+      "MULTIVARIATE_INCONSISTENCY": 12,
+      "PRESSURE_DRIFT": 10,
+      "HUMIDITY_DRIFT": 10,
+      "COMMUNICATION_FAILURE": 8,
+      "TEMPERATURE_SPIKE": 7,
+      "DUPLICATE_DATA": 6,
+      "HUMIDITY_SPIKE": 6,
+      "TEMPERATURE_DROP": 4,
+      "PRESSURE_SPIKE": 4,
+      "TIMESTAMP_ERROR": 3
+    },
+    "severity_distribution": {
+      "SEVERE": 156,
+      "MODERATE": 125,
+      "MILD": 35
+    },
+    "station_distribution": {
+      "43150": 1080,
+      "43189": 1080,
+      "43245": 1080,
+      "AWS002": 1080,
+      "AWS004": 1080,
+      "HYD_AWS_01": 1080
+    },
+    "scenario_counts": 23,
+    "distinct_scenarios": [
+      "SCN_CLEAN_BASELINE",
+      "SCN_TEST_BARO_SPIKE_AWS002",
+      "SCN_TEST_CASE_A_ISOLATED_DRIFT_43189",
+      "SCN_TEST_CASE_B_COHERENT_STORM_DELTA",
+      "SCN_TEST_COMM_FAIL_43245",
+      "SCN_TEST_DROP_MOD_43245",
+      "SCN_TEST_DUPLICATE_43189",
+      "SCN_TEST_FROZEN_AWS004",
+      "SCN_TEST_HUM_DRIFT_HYD",
+      "SCN_TEST_MULTI_HYD",
+      "SCN_TEST_SPIKE_MILD_43150",
+      "SCN_TEST_TIMESTAMP_43150",
+      "SCN_TEST_WX_HEATWAVE",
+      "SCN_TEST_WX_SYNOPTIC_DEPRESSION",
+      "SCN_VAL_BARO_DRIFT_43150",
+      "SCN_VAL_DRIFT_43189",
+      "SCN_VAL_FROZEN_AWS002",
+      "SCN_VAL_HUM_SPIKE_AWS004",
+      "SCN_VAL_MISSING_43245",
+      "SCN_VAL_MULTI_HYD",
+      "SCN_VAL_SPIKE_43189",
+      "SCN_VAL_WX_CONVECTIVE_STORM",
+      "SCN_VAL_WX_SEA_BREEZE"
+    ],
+    "limitations_and_notes": [
+      "Baseline observations are physically calibrated synthetic simulations mimicking Indian Automatic Weather Station diurnal curves, not raw IMD telemetric recordings.",
+      "Weather events are physically consistent meteorological simulations designed to benchmark spatial evidence fusion against false positive sensor alerts.",
+      "Training split is guaranteed strictly 100% clean normal observations with zero fault contamination."
+    ]
+  },
+  "model_evaluations": {
+    "LOF": {
+      "tp": 195,
+      "tn": 752,
+      "fp": 173,
+      "fn": 32,
+      "accuracy": 0.8220486111111112,
+      "precision": 0.529891304347826,
+      "recall": 0.8590308370044053,
+      "f1": 0.6554621848739496,
+      "specificity": 0.812972972972973,
+      "fpr": 0.18702702702702703,
+      "fnr": 0.14096916299559473,
+      "balanced_accuracy": 0.8360019049886891,
+      "mcc": 0.5732889746521987,
+      "roc_auc": 0.8716751994285035,
+      "pr_auc": 0.5667143319398688,
+      "false_alarms_per_station_day": 3.6230366492146597,
+      "calibrated_threshold": -0.33282911659982783,
+      "validation_f1": 0.44866920152091255,
+      "training_time_seconds": 11.588775899999746,
+      "detection_latencies_seconds": {
+        "SCN_TEST_BARO_SPIKE_AWS002": 0.0,
+        "SCN_TEST_CASE_A_ISOLATED_DRIFT_43189": 28800.0,
+        "SCN_TEST_CASE_B_COHERENT_STORM_DELTA": 0.0,
+        "SCN_TEST_COMM_FAIL_43245": 0.0,
+        "SCN_TEST_DROP_MOD_43245": 0.0,
+        "SCN_TEST_DUPLICATE_43189": 18000.0,
+        "SCN_TEST_FROZEN_AWS004": null,
+        "SCN_TEST_HUM_DRIFT_HYD": 28800.0,
+        "SCN_TEST_MULTI_HYD": 0.0,
+        "SCN_TEST_SPIKE_MILD_43150": 0.0,
+        "SCN_TEST_TIMESTAMP_43150": null,
+        "SCN_TEST_WX_HEATWAVE": 0.0,
+        "SCN_TEST_WX_SYNOPTIC_DEPRESSION": 0.0
+      },
+      "mean_detection_latency_seconds": 6872.727272727273,
+      "fault_wise_metrics": {
+        "COMMUNICATION_FAILURE": {
+          "count": 8,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "DUPLICATE_DATA": {
+          "count": 6,
+          "precision": 1.0,
+          "recall": 0.16666666666666666,
+          "f1": 0.2857142857142857
+        },
+        "FROZEN_SENSOR": {
+          "count": 10,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "HUMIDITY_DRIFT": {
+          "count": 10,
+          "precision": 1.0,
+          "recall": 0.2,
+          "f1": 0.3333333333333333
+        },
+        "MULTIVARIATE_INCONSISTENCY": {
+          "count": 6,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "NONE": {
+          "count": 1096,
+          "precision": 0.486646884272997,
+          "recall": 0.9590643274853801,
+          "f1": 0.6456692913385826
+        },
+        "PRESSURE_SPIKE": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DRIFT": {
+          "count": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DROP": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_SPIKE": {
+          "count": 3,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5
+        },
+        "TIMESTAMP_ERROR": {
+          "count": 3,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      },
+      "weather_event_alarm_rate": 0.9590643274853801
+    },
+    "IsolationForest": {
+      "tp": 159,
+      "tn": 762,
+      "fp": 163,
+      "fn": 68,
+      "accuracy": 0.7994791666666666,
+      "precision": 0.4937888198757764,
+      "recall": 0.7004405286343612,
+      "f1": 0.5792349726775956,
+      "specificity": 0.8237837837837838,
+      "fpr": 0.17621621621621622,
+      "fnr": 0.29955947136563876,
+      "balanced_accuracy": 0.7621121562090725,
+      "mcc": 0.4646585915425282,
+      "roc_auc": 0.7905655435170854,
+      "pr_auc": 0.510489515455755,
+      "false_alarms_per_station_day": 3.413612565445026,
+      "calibrated_threshold": 0.5308301322990485,
+      "validation_f1": 0.24615384615384617,
+      "training_time_seconds": 10.573716599999898,
+      "detection_latencies_seconds": {
+        "SCN_TEST_BARO_SPIKE_AWS002": 0.0,
+        "SCN_TEST_CASE_A_ISOLATED_DRIFT_43189": 28800.0,
+        "SCN_TEST_CASE_B_COHERENT_STORM_DELTA": 0.0,
+        "SCN_TEST_COMM_FAIL_43245": null,
+        "SCN_TEST_DROP_MOD_43245": 0.0,
+        "SCN_TEST_DUPLICATE_43189": null,
+        "SCN_TEST_FROZEN_AWS004": null,
+        "SCN_TEST_HUM_DRIFT_HYD": null,
+        "SCN_TEST_MULTI_HYD": 0.0,
+        "SCN_TEST_SPIKE_MILD_43150": null,
+        "SCN_TEST_TIMESTAMP_43150": null,
+        "SCN_TEST_WX_HEATWAVE": 0.0,
+        "SCN_TEST_WX_SYNOPTIC_DEPRESSION": 0.0
+      },
+      "mean_detection_latency_seconds": 4114.285714285715,
+      "fault_wise_metrics": {
+        "COMMUNICATION_FAILURE": {
+          "count": 8,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "DUPLICATE_DATA": {
+          "count": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "FROZEN_SENSOR": {
+          "count": 10,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "HUMIDITY_DRIFT": {
+          "count": 10,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "MULTIVARIATE_INCONSISTENCY": {
+          "count": 6,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "NONE": {
+          "count": 1096,
+          "precision": 0.4673202614379085,
+          "recall": 0.8362573099415205,
+          "f1": 0.59958071278826
+        },
+        "PRESSURE_SPIKE": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DRIFT": {
+          "count": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DROP": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_SPIKE": {
+          "count": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TIMESTAMP_ERROR": {
+          "count": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "weather_event_alarm_rate": 0.8362573099415205
+    },
+    "OneClassSVM": {
+      "tp": 169,
+      "tn": 829,
+      "fp": 96,
+      "fn": 58,
+      "accuracy": 0.8663194444444444,
+      "precision": 0.6377358490566037,
+      "recall": 0.7444933920704846,
+      "f1": 0.6869918699186992,
+      "specificity": 0.8962162162162162,
+      "fpr": 0.10378378378378378,
+      "fnr": 0.2555066079295154,
+      "balanced_accuracy": 0.8203548041433504,
+      "mcc": 0.60556432897217,
+      "roc_auc": 0.8259340397666387,
+      "pr_auc": 0.5670571229487616,
+      "false_alarms_per_station_day": 2.0104712041884816,
+      "calibrated_threshold": 5.183447168682047,
+      "validation_f1": 0.4,
+      "training_time_seconds": 10.406911400000354,
+      "detection_latencies_seconds": {
+        "SCN_TEST_BARO_SPIKE_AWS002": 0.0,
+        "SCN_TEST_CASE_A_ISOLATED_DRIFT_43189": 28800.0,
+        "SCN_TEST_CASE_B_COHERENT_STORM_DELTA": 0.0,
+        "SCN_TEST_COMM_FAIL_43245": null,
+        "SCN_TEST_DROP_MOD_43245": 0.0,
+        "SCN_TEST_DUPLICATE_43189": null,
+        "SCN_TEST_FROZEN_AWS004": null,
+        "SCN_TEST_HUM_DRIFT_HYD": null,
+        "SCN_TEST_MULTI_HYD": 0.0,
+        "SCN_TEST_SPIKE_MILD_43150": null,
+        "SCN_TEST_TIMESTAMP_43150": null,
+        "SCN_TEST_WX_HEATWAVE": 0.0,
+        "SCN_TEST_WX_SYNOPTIC_DEPRESSION": 0.0
+      },
+      "mean_detection_latency_seconds": 4114.285714285715,
+      "fault_wise_metrics": {
+        "COMMUNICATION_FAILURE": {
+          "count": 8,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "DUPLICATE_DATA": {
+          "count": 6,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "FROZEN_SENSOR": {
+          "count": 10,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "HUMIDITY_DRIFT": {
+          "count": 10,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "MULTIVARIATE_INCONSISTENCY": {
+          "count": 6,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "NONE": {
+          "count": 1096,
+          "precision": 0.6129032258064516,
+          "recall": 0.8888888888888888,
+          "f1": 0.7255369928400954
+        },
+        "PRESSURE_SPIKE": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DRIFT": {
+          "count": 2,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_DROP": {
+          "count": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "TEMPERATURE_SPIKE": {
+          "count": 3,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "TIMESTAMP_ERROR": {
+          "count": 3,
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5
+        }
+      },
+      "weather_event_alarm_rate": 0.8888888888888888
+    }
+  }
+}

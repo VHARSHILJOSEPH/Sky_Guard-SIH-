@@ -1,0 +1,564 @@
+{
+  "timestamp": "2026-09-15T14:44:12.809534+00:00",
+  "winning_model": "IsolationForest",
+  "feature_count": 63,
+  "clean_train_rows": 144,
+  "validation_rows": 1116,
+  "test_rows": 1173,
+  "comparison_table": [
+    {
+      "Model": "IsolationForest",
+      "F1": 0.396,
+      "Balanced Acc": 0.791,
+      "Specificity": 0.9571,
+      "Precision": 0.2899,
+      "Recall": 0.625,
+      "MCC": 0.403,
+      "ROC-AUC": 0.9008,
+      "FPR": 0.0429,
+      "False Alarms/Day": 1.03,
+      "Latency (steps)": 1.8,
+      "Train Time (s)": 0.547,
+      "Infer Time (ms)": 29.8,
+      "Selection Score": 0.8327
+    },
+    {
+      "Model": "LOF",
+      "F1": 0.2316,
+      "Balanced Acc": 0.7842,
+      "Specificity": 0.8808,
+      "Precision": 0.1392,
+      "Recall": 0.6875,
+      "MCC": 0.2712,
+      "ROC-AUC": 0.8224,
+      "FPR": 0.1192,
+      "False Alarms/Day": 2.86,
+      "Latency (steps)": 1.8,
+      "Train Time (s)": 0.04,
+      "Infer Time (ms)": 12.72,
+      "Selection Score": 0.5843
+    },
+    {
+      "Model": "OneClassSVM",
+      "F1": 0.0499,
+      "Balanced Acc": 0.4707,
+      "Specificity": 0.0351,
+      "Precision": 0.0257,
+      "Recall": 0.9062,
+      "MCC": -0.0509,
+      "ROC-AUC": 0.7298,
+      "FPR": 0.9649,
+      "False Alarms/Day": 23.16,
+      "Latency (steps)": 0.4,
+      "Train Time (s)": 0.02,
+      "Infer Time (ms)": 7.5,
+      "Selection Score": 0.3981
+    },
+    {
+      "Model": "RobustCovariance",
+      "F1": 0.053,
+      "Balanced Acc": 0.4997,
+      "Specificity": 0.0307,
+      "Precision": 0.0273,
+      "Recall": 0.9688,
+      "MCC": -0.0005,
+      "ROC-AUC": 0.5002,
+      "FPR": 0.9693,
+      "False Alarms/Day": 23.26,
+      "Latency (steps)": 0.2,
+      "Train Time (s)": 0.095,
+      "Infer Time (ms)": 7.19,
+      "Selection Score": 0.7262
+    }
+  ],
+  "model_results": {
+    "IsolationForest": {
+      "status": "SUCCESS",
+      "hyperparameters": {
+        "n_estimators": 200,
+        "max_samples": "auto",
+        "contamination": 0.02,
+        "max_features": 1.0
+      },
+      "calibrated_threshold": 0.55,
+      "selection_score": 0.8326566831312677,
+      "validation_metrics": {
+        "precision": 0.6666666666666666,
+        "recall": 0.5588235294117647,
+        "specificity": 0.9818702290076335,
+        "balanced_accuracy": 0.7703468792096991,
+        "f1": 0.608,
+        "mcc": 0.5874907675657456,
+        "roc_auc": 0.8835527054333183,
+        "pr_auc": 0.5342941026431564,
+        "false_positive_rate": 0.01812977099236641,
+        "false_alarms_per_station_day": 0.43511450381679384,
+        "detection_latency": 1.4285714285714286,
+        "training_time": 0.5467404999981227,
+        "inference_time": 0.028047600000718376,
+        "mean_anomaly_score": 0.12639800301482645,
+        "true_positives": 38,
+        "false_positives": 19,
+        "true_negatives": 1029,
+        "false_negatives": 30,
+        "sample_count": 1116,
+        "fault_breakdown": {
+          "COMMUNICATION_FAILURE": {
+            "count": 6,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "FROZEN_SENSOR": {
+            "count": 1,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 2,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 7,
+            "detected": 7,
+            "recall": 1.0
+          },
+          "PRESSURE_DRIFT": {
+            "count": 8,
+            "detected": 6,
+            "recall": 0.75
+          },
+          "PRESSURE_SPIKE": {
+            "count": 12,
+            "detected": 11,
+            "recall": 0.9166666666666666
+          },
+          "TEMPERATURE_SPIKE": {
+            "count": 18,
+            "detected": 11,
+            "recall": 0.6111111111111112
+          },
+          "TIMESTAMP_ERROR": {
+            "count": 5,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "TEMPERATURE_DRIFT": {
+            "count": 9,
+            "detected": 3,
+            "recall": 0.3333333333333333
+          }
+        },
+        "calibrated_threshold": 0.55
+      },
+      "test_metrics": {
+        "precision": 0.2898550724637681,
+        "recall": 0.625,
+        "specificity": 0.9570552147239264,
+        "balanced_accuracy": 0.7910276073619632,
+        "f1": 0.39603960396039606,
+        "mcc": 0.4029701841639818,
+        "roc_auc": 0.9008408194566171,
+        "pr_auc": 0.4487786081880152,
+        "false_positive_rate": 0.04294478527607362,
+        "false_alarms_per_station_day": 1.030674846625767,
+        "detection_latency": 1.8,
+        "training_time": null,
+        "inference_time": 0.029804900001181522,
+        "mean_anomaly_score": 0.11252906088867348,
+        "true_positives": 20,
+        "false_positives": 49,
+        "true_negatives": 1092,
+        "false_negatives": 12,
+        "sample_count": 1173,
+        "fault_breakdown": {
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 13,
+            "detected": 12,
+            "recall": 0.9230769230769231
+          },
+          "PRESSURE_SPIKE": {
+            "count": 6,
+            "detected": 6,
+            "recall": 1.0
+          },
+          "COMMUNICATION_FAILURE": {
+            "count": 5,
+            "detected": 1,
+            "recall": 0.2
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 8,
+            "detected": 1,
+            "recall": 0.125
+          }
+        }
+      }
+    },
+    "LOF": {
+      "status": "SUCCESS",
+      "hyperparameters": {
+        "n_neighbors": 15,
+        "contamination": 0.03,
+        "metric": "minkowski"
+      },
+      "calibrated_threshold": 0.3,
+      "selection_score": 0.5842982554023526,
+      "validation_metrics": {
+        "precision": 0.21839080459770116,
+        "recall": 0.5588235294117647,
+        "specificity": 0.8702290076335878,
+        "balanced_accuracy": 0.7145262685226763,
+        "f1": 0.3140495867768595,
+        "mcc": 0.282908174578861,
+        "roc_auc": 0.7648041086663673,
+        "pr_auc": 0.16430788274685132,
+        "false_positive_rate": 0.1297709923664122,
+        "false_alarms_per_station_day": 3.114503816793893,
+        "detection_latency": 2.4444444444444446,
+        "training_time": 0.03953869999895687,
+        "inference_time": 0.018084300001646625,
+        "mean_anomaly_score": 0.15469091169352003,
+        "true_positives": 38,
+        "false_positives": 136,
+        "true_negatives": 912,
+        "false_negatives": 30,
+        "sample_count": 1116,
+        "fault_breakdown": {
+          "COMMUNICATION_FAILURE": {
+            "count": 6,
+            "detected": 1,
+            "recall": 0.16666666666666666
+          },
+          "FROZEN_SENSOR": {
+            "count": 1,
+            "detected": 1,
+            "recall": 1.0
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 2,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 7,
+            "detected": 6,
+            "recall": 0.8571428571428571
+          },
+          "PRESSURE_DRIFT": {
+            "count": 8,
+            "detected": 5,
+            "recall": 0.625
+          },
+          "PRESSURE_SPIKE": {
+            "count": 12,
+            "detected": 9,
+            "recall": 0.75
+          },
+          "TEMPERATURE_SPIKE": {
+            "count": 18,
+            "detected": 13,
+            "recall": 0.7222222222222222
+          },
+          "TIMESTAMP_ERROR": {
+            "count": 5,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "TEMPERATURE_DRIFT": {
+            "count": 9,
+            "detected": 3,
+            "recall": 0.3333333333333333
+          }
+        },
+        "calibrated_threshold": 0.3
+      },
+      "test_metrics": {
+        "precision": 0.13924050632911392,
+        "recall": 0.6875,
+        "specificity": 0.880806310254163,
+        "balanced_accuracy": 0.7841531551270815,
+        "f1": 0.23157894736842105,
+        "mcc": 0.27116817925690195,
+        "roc_auc": 0.8224008545135846,
+        "pr_auc": 0.11291136875287242,
+        "false_positive_rate": 0.11919368974583698,
+        "false_alarms_per_station_day": 2.8606485539000874,
+        "detection_latency": 1.8,
+        "training_time": null,
+        "inference_time": 0.012718499998300103,
+        "mean_anomaly_score": 0.13403807052398328,
+        "true_positives": 22,
+        "false_positives": 136,
+        "true_negatives": 1005,
+        "false_negatives": 10,
+        "sample_count": 1173,
+        "fault_breakdown": {
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 13,
+            "detected": 13,
+            "recall": 1.0
+          },
+          "PRESSURE_SPIKE": {
+            "count": 6,
+            "detected": 6,
+            "recall": 1.0
+          },
+          "COMMUNICATION_FAILURE": {
+            "count": 5,
+            "detected": 2,
+            "recall": 0.4
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 8,
+            "detected": 1,
+            "recall": 0.125
+          }
+        }
+      }
+    },
+    "OneClassSVM": {
+      "status": "SUCCESS",
+      "hyperparameters": {
+        "kernel": "rbf",
+        "nu": 0.03,
+        "gamma": "scale"
+      },
+      "calibrated_threshold": 0.8,
+      "selection_score": 0.39808796729921214,
+      "validation_metrics": {
+        "precision": 0.09105180533751962,
+        "recall": 0.8529411764705882,
+        "specificity": 0.44751908396946566,
+        "balanced_accuracy": 0.650230130220027,
+        "f1": 0.16453900709219857,
+        "mcc": 0.1452060341414661,
+        "roc_auc": 0.7908902110462506,
+        "pr_auc": 0.18398702290425786,
+        "false_positive_rate": 0.5524809160305344,
+        "false_alarms_per_station_day": 13.259541984732826,
+        "detection_latency": 0.5454545454545454,
+        "training_time": 0.02033310000115307,
+        "inference_time": 0.008585499999753665,
+        "mean_anomaly_score": 0.7653644539326842,
+        "true_positives": 58,
+        "false_positives": 579,
+        "true_negatives": 469,
+        "false_negatives": 10,
+        "sample_count": 1116,
+        "fault_breakdown": {
+          "COMMUNICATION_FAILURE": {
+            "count": 6,
+            "detected": 4,
+            "recall": 0.6666666666666666
+          },
+          "FROZEN_SENSOR": {
+            "count": 1,
+            "detected": 1,
+            "recall": 1.0
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 2,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 7,
+            "detected": 7,
+            "recall": 1.0
+          },
+          "PRESSURE_DRIFT": {
+            "count": 8,
+            "detected": 7,
+            "recall": 0.875
+          },
+          "PRESSURE_SPIKE": {
+            "count": 12,
+            "detected": 12,
+            "recall": 1.0
+          },
+          "TEMPERATURE_SPIKE": {
+            "count": 18,
+            "detected": 18,
+            "recall": 1.0
+          },
+          "TIMESTAMP_ERROR": {
+            "count": 5,
+            "detected": 2,
+            "recall": 0.4
+          },
+          "TEMPERATURE_DRIFT": {
+            "count": 9,
+            "detected": 7,
+            "recall": 0.7777777777777778
+          }
+        },
+        "calibrated_threshold": 0.8
+      },
+      "test_metrics": {
+        "precision": 0.02566371681415929,
+        "recall": 0.90625,
+        "specificity": 0.035056967572304996,
+        "balanced_accuracy": 0.4706534837861525,
+        "f1": 0.04991394148020654,
+        "mcc": -0.05087810299455918,
+        "roc_auc": 0.7297874671340929,
+        "pr_auc": 0.11078149265087546,
+        "false_positive_rate": 0.964943032427695,
+        "false_alarms_per_station_day": 23.15863277826468,
+        "detection_latency": 0.4,
+        "training_time": null,
+        "inference_time": 0.007504799999878742,
+        "mean_anomaly_score": 0.9416871351076131,
+        "true_positives": 29,
+        "false_positives": 1101,
+        "true_negatives": 40,
+        "false_negatives": 3,
+        "sample_count": 1173,
+        "fault_breakdown": {
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 13,
+            "detected": 13,
+            "recall": 1.0
+          },
+          "PRESSURE_SPIKE": {
+            "count": 6,
+            "detected": 6,
+            "recall": 1.0
+          },
+          "COMMUNICATION_FAILURE": {
+            "count": 5,
+            "detected": 3,
+            "recall": 0.6
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 8,
+            "detected": 7,
+            "recall": 0.875
+          }
+        }
+      }
+    },
+    "RobustCovariance": {
+      "status": "SUCCESS",
+      "hyperparameters": {
+        "contamination": 0.02,
+        "support_fraction": null
+      },
+      "calibrated_threshold": 0.5,
+      "selection_score": 0.7261870271582022,
+      "validation_metrics": {
+        "precision": 0.3128834355828221,
+        "recall": 0.75,
+        "specificity": 0.8931297709923665,
+        "balanced_accuracy": 0.8215648854961832,
+        "f1": 0.44155844155844154,
+        "mcc": 0.43560560479354077,
+        "roc_auc": 0.8763260552312528,
+        "pr_auc": 0.2863617128245798,
+        "false_positive_rate": 0.10687022900763359,
+        "false_alarms_per_station_day": 2.564885496183206,
+        "detection_latency": 1.0,
+        "training_time": 0.09463879999748315,
+        "inference_time": 0.006925699999555945,
+        "mean_anomaly_score": 0.14654469854976604,
+        "true_positives": 51,
+        "false_positives": 112,
+        "true_negatives": 936,
+        "false_negatives": 17,
+        "sample_count": 1116,
+        "fault_breakdown": {
+          "COMMUNICATION_FAILURE": {
+            "count": 6,
+            "detected": 6,
+            "recall": 1.0
+          },
+          "FROZEN_SENSOR": {
+            "count": 1,
+            "detected": 1,
+            "recall": 1.0
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 2,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 7,
+            "detected": 7,
+            "recall": 1.0
+          },
+          "PRESSURE_DRIFT": {
+            "count": 8,
+            "detected": 5,
+            "recall": 0.625
+          },
+          "PRESSURE_SPIKE": {
+            "count": 12,
+            "detected": 11,
+            "recall": 0.9166666666666666
+          },
+          "TEMPERATURE_SPIKE": {
+            "count": 18,
+            "detected": 16,
+            "recall": 0.8888888888888888
+          },
+          "TIMESTAMP_ERROR": {
+            "count": 5,
+            "detected": 0,
+            "recall": 0.0
+          },
+          "TEMPERATURE_DRIFT": {
+            "count": 9,
+            "detected": 5,
+            "recall": 0.5555555555555556
+          }
+        },
+        "calibrated_threshold": 0.5
+      },
+      "test_metrics": {
+        "precision": 0.027264731750219876,
+        "recall": 0.96875,
+        "specificity": 0.03067484662576687,
+        "balanced_accuracy": 0.49971242331288346,
+        "f1": 0.05303678357570573,
+        "mcc": -0.0005432128071822585,
+        "roc_auc": 0.500191717791411,
+        "pr_auc": 0.027291443505169617,
+        "false_positive_rate": 0.9693251533742331,
+        "false_alarms_per_station_day": 23.263803680981596,
+        "detection_latency": 0.2,
+        "training_time": null,
+        "inference_time": 0.007192400000349153,
+        "mean_anomaly_score": 0.9693131047525694,
+        "true_positives": 31,
+        "false_positives": 1106,
+        "true_negatives": 35,
+        "false_negatives": 1,
+        "sample_count": 1173,
+        "fault_breakdown": {
+          "MULTIVARIATE_INCONSISTENCY": {
+            "count": 13,
+            "detected": 13,
+            "recall": 1.0
+          },
+          "PRESSURE_SPIKE": {
+            "count": 6,
+            "detected": 6,
+            "recall": 1.0
+          },
+          "COMMUNICATION_FAILURE": {
+            "count": 5,
+            "detected": 4,
+            "recall": 0.8
+          },
+          "HUMIDITY_DRIFT": {
+            "count": 8,
+            "detected": 8,
+            "recall": 1.0
+          }
+        }
+      }
+    }
+  }
+}

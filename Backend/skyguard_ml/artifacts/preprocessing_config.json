@@ -1,0 +1,15 @@
+{
+  "numeric_variables": [
+    "temperature",
+    "humidity",
+    "pressure",
+    "rainfall",
+    "wind_speed",
+    "wind_direction"
+  ],
+  "chronological_split": {
+    "train_fraction": 0.6,
+    "validation_fraction": 0.2,
+    "test_fraction": 0.2
+  }
+}

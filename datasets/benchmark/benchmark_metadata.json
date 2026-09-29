@@ -1,0 +1,113 @@
+{
+  "benchmark_name": "SkyGuard-Scientific-Benchmark-v1.0",
+  "random_seed": 42,
+  "created_at": "2026-09-15T20:21:20.143200+00:00",
+  "station_count": 6,
+  "total_observations": 6480,
+  "time_range": {
+    "start": "2026-08-01T00:00:00Z",
+    "end": "2026-09-14T23:00:00Z",
+    "total_hours": 1080,
+    "cadence_hours": 1
+  },
+  "split_summary": {
+    "train": {
+      "count": 3888,
+      "percentage": 60.0,
+      "start": "2026-08-01T00:00:00Z",
+      "end": "2026-08-27T23:00:00Z",
+      "clean_normal_only": true
+    },
+    "validation": {
+      "count": 1296,
+      "percentage": 20.0,
+      "start": "2026-08-28T00:00:00Z",
+      "end": "2026-09-05T23:00:00Z",
+      "ground_truth_distribution": {
+        "NORMAL": 1215,
+        "SENSOR_FAULT": 42,
+        "WEATHER_EVENT": 27,
+        "DATA_QUALITY_ISSUE": 12
+      }
+    },
+    "test": {
+      "count": 1296,
+      "percentage": 20.0,
+      "start": "2026-09-06T00:00:00Z",
+      "end": "2026-09-14T23:00:00Z",
+      "ground_truth_distribution": {
+        "NORMAL": 1061,
+        "WEATHER_EVENT": 171,
+        "SENSOR_FAULT": 47,
+        "DATA_QUALITY_ISSUE": 9,
+        "COMMUNICATION_FAULT": 8
+      }
+    }
+  },
+  "class_distribution": {
+    "NORMAL": 6164,
+    "WEATHER_EVENT": 198,
+    "SENSOR_FAULT": 89,
+    "DATA_QUALITY_ISSUE": 21,
+    "COMMUNICATION_FAULT": 8
+  },
+  "fault_type_distribution": {
+    "TEMPERATURE_DRIFT": 18,
+    "FROZEN_SENSOR": 18,
+    "MISSING_DATA": 12,
+    "MULTIVARIATE_INCONSISTENCY": 12,
+    "PRESSURE_DRIFT": 10,
+    "HUMIDITY_DRIFT": 10,
+    "COMMUNICATION_FAILURE": 8,
+    "TEMPERATURE_SPIKE": 7,
+    "DUPLICATE_DATA": 6,
+    "HUMIDITY_SPIKE": 6,
+    "TEMPERATURE_DROP": 4,
+    "PRESSURE_SPIKE": 4,
+    "TIMESTAMP_ERROR": 3
+  },
+  "severity_distribution": {
+    "SEVERE": 156,
+    "MODERATE": 125,
+    "MILD": 35
+  },
+  "station_distribution": {
+    "43150": 1080,
+    "43189": 1080,
+    "43245": 1080,
+    "AWS002": 1080,
+    "AWS004": 1080,
+    "HYD_AWS_01": 1080
+  },
+  "scenario_counts": 23,
+  "distinct_scenarios": [
+    "SCN_CLEAN_BASELINE",
+    "SCN_TEST_BARO_SPIKE_AWS002",
+    "SCN_TEST_CASE_A_ISOLATED_DRIFT_43189",
+    "SCN_TEST_CASE_B_COHERENT_STORM_DELTA",
+    "SCN_TEST_COMM_FAIL_43245",
+    "SCN_TEST_DROP_MOD_43245",
+    "SCN_TEST_DUPLICATE_43189",
+    "SCN_TEST_FROZEN_AWS004",
+    "SCN_TEST_HUM_DRIFT_HYD",
+    "SCN_TEST_MULTI_HYD",
+    "SCN_TEST_SPIKE_MILD_43150",
+    "SCN_TEST_TIMESTAMP_43150",
+    "SCN_TEST_WX_HEATWAVE",
+    "SCN_TEST_WX_SYNOPTIC_DEPRESSION",
+    "SCN_VAL_BARO_DRIFT_43150",
+    "SCN_VAL_DRIFT_43189",
+    "SCN_VAL_FROZEN_AWS002",
+    "SCN_VAL_HUM_SPIKE_AWS004",
+    "SCN_VAL_MISSING_43245",
+    "SCN_VAL_MULTI_HYD",
+    "SCN_VAL_SPIKE_43189",
+    "SCN_VAL_WX_CONVECTIVE_STORM",
+    "SCN_VAL_WX_SEA_BREEZE"
+  ],
+  "limitations_and_notes": [
+    "Baseline observations are physically calibrated synthetic simulations mimicking Indian Automatic Weather Station diurnal curves, not raw IMD telemetric recordings.",
+    "Weather events are physically consistent meteorological simulations designed to benchmark spatial evidence fusion against false positive sensor alerts.",
+    "Training split is guaranteed strictly 100% clean normal observations with zero fault contamination."
+  ]
+}
