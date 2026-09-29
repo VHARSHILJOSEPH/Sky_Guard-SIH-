@@ -13,7 +13,12 @@ import os
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv, find_dotenv
+try:
+    from dotenv import load_dotenv, find_dotenv
+    has_dotenv = True
+except ImportError:
+    has_dotenv = False
+
 from supabase import create_client, Client
 
 logger = logging.getLogger("skyguard.supabase")
@@ -21,15 +26,17 @@ logger = logging.getLogger("skyguard.supabase")
 # 1. First priority: Load Backend/.env (isolated backend-only environment)
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 backend_env = BACKEND_DIR / ".env"
-if backend_env.exists():
+if has_dotenv and backend_env.exists():
     load_dotenv(backend_env, override=False)
 
 # 2. Second priority: Load root .env
 root_env = Path(__file__).resolve().parents[3] / ".env"
-if root_env.exists():
-    load_dotenv(root_env, override=False)
-else:
-    load_dotenv(find_dotenv(usecwd=True), override=False)
+if has_dotenv:
+    if root_env.exists():
+        load_dotenv(root_env, override=False)
+    else:
+        load_dotenv(find_dotenv(usecwd=True), override=False)
+
 
 # 3. Read environment variables
 SUPABASE_URL: str = (
