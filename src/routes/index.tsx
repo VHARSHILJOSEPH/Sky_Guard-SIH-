@@ -38,6 +38,7 @@ import {
   Wifi,
   WifiOff,
   Wind,
+  Wrench,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ import {
 } from "@/data/skyguard";
 import { WeatherService } from "@/data/weather-service";
 import { StationMap } from "@/components/StationMap";
+import { getCustomizedAnomalyProfile } from "@/data/anomaly-intelligence";
 
 function DeltaBadge({ delta, unit = "" }: { delta: number | null | undefined; unit?: string }) {
   if (delta === null || delta === undefined || isNaN(delta)) {
@@ -266,7 +268,6 @@ export function DashboardConsole() {
     (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.type : null) ||
     station.anomaly_type ||
     "";
-  const domainInfo = getAnomalyDomain(rawAnomalyType);
   const isAnomalyActive = Boolean(
     matchingPipeline?.is_anomaly ||
     (activeAnomaly && activeAnomaly.stationId === selectedStationId && activeAnomaly.type !== "NORMAL") ||
@@ -274,27 +275,50 @@ export function DashboardConsole() {
     station.status === "CRITICAL",
   );
 
+  const anomalyProfile = useMemo(() => {
+    return getCustomizedAnomalyProfile(
+      rawAnomalyType,
+      station,
+      matchingPipeline,
+      activeAnomaly?.stationId === selectedStationId ? activeAnomaly : null,
+      externalForecast,
+    );
+  }, [rawAnomalyType, station, matchingPipeline, activeAnomaly, selectedStationId, externalForecast]);
+
+  const domainInfo = useMemo(() => {
+    const isTemp = anomalyProfile.affectedParameter === "temperature" || anomalyProfile.affectedParameter === "multivariate";
+    const isHum = anomalyProfile.affectedParameter === "humidity" || anomalyProfile.affectedParameter === "multivariate";
+    const isBaro = anomalyProfile.affectedParameter === "pressure";
+    return {
+      domain: anomalyProfile.domain,
+      label: anomalyProfile.domainLabel,
+      isTempAffected: isTemp,
+      isHumAffected: isHum,
+      isBaroAffected: isBaro,
+    };
+  }, [anomalyProfile]);
+
   // Status strings
   const tempStatus = isLost
     ? "OFFLINE"
-    : domainInfo.isTempAffected
-      ? rawAnomalyType.replace(/_/g, " ").toUpperCase()
+    : domainInfo.isTempAffected && isAnomalyActive
+      ? (anomalyProfile.severity === "CRITICAL" ? "CRITICAL FAULT" : "ALERT")
       : tempVal === null
         ? "NO DATA"
         : "NORMAL";
 
   const humStatus = isLost
     ? "OFFLINE"
-    : domainInfo.isHumAffected
-      ? rawAnomalyType.replace(/_/g, " ").toUpperCase()
+    : domainInfo.isHumAffected && isAnomalyActive
+      ? (anomalyProfile.severity === "CRITICAL" ? "FROZEN TRANSDUCER" : "ALERT")
       : humVal === null
         ? "NO DATA"
         : "NORMAL";
 
   const pressStatus = isLost
     ? "OFFLINE"
-    : domainInfo.isBaroAffected
-      ? rawAnomalyType.replace(/_/g, " ").toUpperCase()
+    : domainInfo.isBaroAffected && isAnomalyActive
+      ? (baroVal === null ? "CHANNEL DROPOUT" : "ALERT")
       : baroVal === null
         ? "NO DATA"
         : "NORMAL";
@@ -783,147 +807,198 @@ export function DashboardConsole() {
       {/* ==================== 4. AI ANOMALY OBSERVATION STATUS ==================== */}
       {isAnomalyActive ? (
         <div className="bg-card border-l-4 border-l-rose-500 border border-border rounded-xl p-5 shadow-xs space-y-4">
+          {/* Header Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border/70 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <AlertTriangle className="h-4 w-4" />
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 uppercase">
-                    {matchingPipeline?.severity || (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.severity : null) || "HIGH"} SEVERITY
+                    {matchingPipeline?.severity || anomalyProfile.severity} SEVERITY
                   </span>
-                  <span className="text-sm font-bold text-foreground">
-                    {rawAnomalyType.replace(/_/g, " ").toUpperCase()}
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border uppercase">
+                    {anomalyProfile.domainLabel}
                   </span>
+                  <h3 className="text-sm sm:text-base font-bold text-foreground">
+                    {anomalyProfile.title}
+                  </h3>
                 </div>
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  Flagged on Station {stnId} at {formatTime(timestampStr)}
+                <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+                  <span>
+                    Flagged on {station.station_name} ({stnId}) · {station.district}, {station.state}
+                  </span>
+                  <span>·</span>
+                  <span className="font-mono text-foreground font-medium">
+                    Observed: {formatTime(timestampStr)}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Score & Confidence */}
-            <div className="flex items-center gap-3 text-xs font-mono">
-              <div className="bg-muted/40 px-2.5 py-1 rounded border border-border">
+            {/* Score & Confidence Badges */}
+            <div className="flex items-center gap-2.5 text-xs font-mono shrink-0">
+              <div className="bg-muted/40 px-3 py-1.5 rounded-lg border border-border">
                 <span className="text-muted-foreground">Anomaly Score: </span>
-                <strong className="text-rose-400">
+                <strong className="text-rose-400 font-bold">
                   {matchingPipeline?.anomaly_score !== undefined
                     ? Number(matchingPipeline.anomaly_score).toFixed(2)
-                    : "0.87"}
+                    : anomalyProfile.anomalyScore.toFixed(2)}
                 </strong>
               </div>
-              <div className="bg-muted/40 px-2.5 py-1 rounded border border-border">
+              <div className="bg-muted/40 px-3 py-1.5 rounded-lg border border-border">
                 <span className="text-muted-foreground">Confidence: </span>
-                <strong className="text-foreground">
+                <strong className="text-foreground font-bold">
                   {matchingPipeline?.confidence
                     ? `${Math.round(matchingPipeline.confidence * (matchingPipeline.confidence <= 1 ? 100 : 1))}%`
-                    : "91%"}
+                    : `${Math.round(anomalyProfile.confidence)}%`}
                 </strong>
               </div>
             </div>
           </div>
 
+          {/* Diagnostic Inspection Strip (Observed vs Expected vs Variance) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-muted/20 p-3 rounded-lg border border-border/70 font-mono text-xs">
+            <div className="space-y-0.5">
+              <span className="text-[10.5px] text-muted-foreground uppercase block font-sans font-semibold">
+                Observed Sensor Value
+              </span>
+              <span className="text-sm font-bold text-rose-300">
+                {anomalyProfile.observedValue}
+              </span>
+              <span className="text-[10px] text-muted-foreground block font-sans truncate">
+                {anomalyProfile.parameterLabel}
+              </span>
+            </div>
+
+            <div className="space-y-0.5">
+              <span className="text-[10.5px] text-muted-foreground uppercase block font-sans font-semibold">
+                Baseline / Expected
+              </span>
+              <span className="text-sm font-semibold text-emerald-400">
+                {anomalyProfile.expectedValue}
+              </span>
+              <span className="text-[10px] text-muted-foreground block font-sans">
+                Learned Diurnal Equilibrium
+              </span>
+            </div>
+
+            <div className="space-y-0.5">
+              <span className="text-[10.5px] text-muted-foreground uppercase block font-sans font-semibold">
+                Telemetry Evidence
+              </span>
+              <span className="text-sm font-semibold text-amber-300">
+                {anomalyProfile.deviationMetric}
+              </span>
+              <span className="text-[10px] text-muted-foreground block font-sans truncate">
+                Subsystem: {anomalyProfile.hardwareComponent}
+              </span>
+            </div>
+          </div>
+
           {/* Explanation & Evidence Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="space-y-2">
-              <div className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
-                Why SkyGuard Flagged This Observation
+            {/* Left: Why Was This Flagged */}
+            <div className="space-y-2 bg-muted/15 p-3.5 rounded-lg border border-border/60">
+              <div className="font-semibold text-foreground uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Cpu className="h-3.5 w-3.5 text-rose-400" />
+                <span>Why Was This Flagged?</span>
               </div>
-              <ul className="space-y-1.5 text-muted-foreground">
-                {matchingPipeline?.why_flagged &&
-                matchingPipeline.why_flagged.length > 0 ? (
-                  matchingPipeline.why_flagged.map((pt, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-rose-400 font-bold">•</span>
-                      <span>{pt}</span>
-                    </li>
-                  ))
-                ) : (
-                  <>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400 font-bold">•</span>
-                      <span>
-                        Telemetry reading deviated sharply from recent diurnal station baseline
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400 font-bold">•</span>
-                      <span>Rapid rate of change exceeded certified sensor rate limit</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400 font-bold">•</span>
-                      <span>
-                        Pressure and humidity channels showed absence of corroborating atmospheric
-                        front
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-rose-400 font-bold">•</span>
-                      <span>
-                        Spatial corroboration: Neighboring AWS stations within 50km reported nominal
-                        values
-                      </span>
-                    </li>
-                  </>
-                )}
+              <ul className="space-y-2 text-muted-foreground">
+                {(matchingPipeline?.why_flagged && matchingPipeline.why_flagged.length > 0
+                  ? matchingPipeline.why_flagged
+                  : anomalyProfile.whyFlagged
+                ).map((pt, i) => (
+                  <li key={i} className="flex items-start gap-2 leading-relaxed">
+                    <span className="text-rose-400 font-bold shrink-0 mt-0.5">•</span>
+                    <span>{pt}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            <div className="space-y-2">
-              <div className="font-semibold text-foreground uppercase tracking-wider text-[11px]">
-                Diagnosis & Recommendation
-              </div>
-              <p className="text-muted-foreground leading-relaxed">
-                {matchingPipeline?.explanation ||
-                  (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.description : null) ||
-                  station.reason ||
-                  "Statistical outlier detected across temporal and multivariate dimensions."}
-              </p>
+            {/* Right: Technical Diagnosis & Operator Remediation */}
+            <div className="space-y-2.5 bg-muted/15 p-3.5 rounded-lg border border-border/60 flex flex-col justify-between">
+              <div className="space-y-2">
+                <div className="font-semibold text-foreground uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <Wrench className="h-3.5 w-3.5 text-sky-400" />
+                  <span>Technical Diagnosis & Root Cause</span>
+                </div>
+                <p className="text-muted-foreground leading-relaxed">
+                  {matchingPipeline?.explanation || anomalyProfile.narrative}
+                </p>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap gap-2">
+                {/* Certified Remediation Recommendation */}
+                <div className="p-2.5 rounded-md bg-sky-500/10 border border-sky-500/25 text-sky-200 text-xs flex items-start gap-2">
+                  <ShieldAlert className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
+                  <span>
+                    <strong className="text-sky-300 font-semibold">Recommended Remediation: </strong>
+                    {anomalyProfile.recommendedAction}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons Deck */}
+              <div className="pt-2 border-t border-border/50 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id =
+                        matchingPipeline?.incident_id ||
+                        (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) ||
+                        "INC-ACTIVE";
+                      handleUpdateLifecycle(id, "ACKNOWLEDGED");
+                      acknowledgeAnomaly();
+                    }}
+                    className="px-2.5 py-1.5 rounded-md bg-muted hover:bg-secondary text-foreground text-xs font-medium border border-border cursor-pointer transition-colors"
+                  >
+                    Acknowledge
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id =
+                        matchingPipeline?.incident_id ||
+                        (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) ||
+                        "INC-ACTIVE";
+                      handleUpdateLifecycle(id, "INVESTIGATING");
+                    }}
+                    className="px-2.5 py-1.5 rounded-md bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 text-xs font-medium border border-amber-500/30 cursor-pointer transition-colors"
+                  >
+                    Investigating
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id =
+                        matchingPipeline?.incident_id ||
+                        (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) ||
+                        "INC-ACTIVE";
+                      handleUpdateLifecycle(id, "RESOLVED");
+                      dismissAnomaly();
+                    }}
+                    className="px-2.5 py-1.5 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs font-medium border border-emerald-500/30 cursor-pointer transition-colors"
+                  >
+                    Resolve
+                  </button>
+                  <button
+                    type="button"
+                    onClick={dismissAnomaly}
+                    className="px-2.5 py-1.5 rounded-md bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-medium border border-rose-500/30 cursor-pointer transition-colors"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => {
-                    const id =
-                      matchingPipeline?.incident_id || (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) || "INC-ACTIVE";
-                    handleUpdateLifecycle(id, "ACKNOWLEDGED");
-                    acknowledgeAnomaly();
-                  }}
-                  className="px-3 py-1.5 rounded-md bg-muted hover:bg-secondary text-foreground text-xs font-medium border border-border cursor-pointer transition-colors"
+                  onClick={() => navigate({ to: "/diagnostics" })}
+                  className="px-3 py-1.5 rounded-md bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 text-xs font-semibold border border-sky-400/30 flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
-                  Acknowledge
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const id =
-                      matchingPipeline?.incident_id || (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) || "INC-ACTIVE";
-                    handleUpdateLifecycle(id, "INVESTIGATING");
-                  }}
-                  className="px-3 py-1.5 rounded-md bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 text-xs font-medium border border-amber-500/30 cursor-pointer transition-colors"
-                >
-                  Investigating
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const id =
-                      matchingPipeline?.incident_id || (activeAnomaly?.stationId === selectedStationId ? activeAnomaly.id : null) || "INC-ACTIVE";
-                    handleUpdateLifecycle(id, "RESOLVED");
-                    dismissAnomaly();
-                  }}
-                  className="px-3 py-1.5 rounded-md bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs font-medium border border-emerald-500/30 cursor-pointer transition-colors"
-                >
-                  Resolve
-                </button>
-                <button
-                  type="button"
-                  onClick={dismissAnomaly}
-                  className="px-3 py-1.5 rounded-md bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs font-medium border border-rose-500/30 cursor-pointer transition-colors"
-                >
-                  Dismiss
+                  <span>Evidence Audit</span>
+                  <ExternalLink className="h-3 w-3" />
                 </button>
               </div>
             </div>

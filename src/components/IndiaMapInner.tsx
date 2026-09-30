@@ -1,4 +1,5 @@
-import { CircleMarker, MapContainer, Popup, TileLayer, Tooltip } from "react-leaflet";
+import { useEffect } from "react";
+import { CircleMarker, MapContainer, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "@tanstack/react-router";
 import type { Station } from "@/data/skyguard";
@@ -15,6 +16,29 @@ export interface IndiaMapProps {
   highlightId?: string;
   selectedId?: string;
 }
+
+// Controller to auto-invalidate size on mount/resize and update view smoothly
+function MapController({ center, zoom }: { center: [number, number]; zoom: number }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 150);
+    const t2 = setTimeout(() => map.invalidateSize(), 500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    map.setView(center, zoom, { animate: true });
+  }, [center, zoom, map]);
+
+  return null;
+}
+
+const CARTO_KEY = typeof import.meta !== "undefined" && import.meta.env?.VITE_CARTO_API_KEY;
 
 export default function IndiaMapInner({
   stations,
@@ -33,14 +57,33 @@ export default function IndiaMapInner({
       center={center}
       zoom={zoom}
       minZoom={3}
+      maxZoom={12}
       scrollWheelZoom
       style={{ height, width: "100%", background: "#05131b" }}
       worldCopyJump={false}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-      />
+      <MapController center={center} zoom={zoom} />
+      {CARTO_KEY ? (
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url={`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_KEY}`}
+          subdomains="abcd"
+          maxZoom={19}
+        />
+      ) : (
+        <>
+          {/* Watermark-free public dark cartographic basemap */}
+          <TileLayer
+            attribution='&copy; <a href="https://www.esri.com/">Esri</a>, USGS, NOAA'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            maxZoom={16}
+          />
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+            maxZoom={16}
+          />
+        </>
+      )}
       {stations.map((s) => {
         const tone = statusTone(s.status) as Tone;
         const color = TONE_HEX[tone];

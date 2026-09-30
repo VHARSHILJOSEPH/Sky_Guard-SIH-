@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import {
   CircleMarker,
   MapContainer,
@@ -35,14 +35,28 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
   return Math.round(R * c);
 }
 
-// Helper to auto-recenter map when selected station changes
-function MapRecenter({ center }: { center: [number, number] }) {
+// Helper to handle auto-recentering and ensure proper sizing when mounted or resized
+function MapController({ center }: { center: [number, number] }) {
   const map = useMap();
+
+  useEffect(() => {
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 150);
+    const t2 = setTimeout(() => map.invalidateSize(), 500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [map]);
+
   useEffect(() => {
     map.setView(center, map.getZoom(), { animate: true });
   }, [center, map]);
+
   return null;
 }
+
+const CARTO_KEY = typeof import.meta !== "undefined" && import.meta.env?.VITE_CARTO_API_KEY;
 
 export default function StationMapInner({
   stations,
@@ -104,13 +118,28 @@ export default function StationMapInner({
         style={{ height, width: "100%", background: "#090d16" }}
         attributionControl={false}
       >
-        <MapRecenter center={center} />
+        <MapController center={center} />
 
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          subdomains="abcd"
-          maxZoom={19}
-        />
+        {CARTO_KEY ? (
+          <TileLayer
+            url={`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_KEY}`}
+            subdomains="abcd"
+            maxZoom={19}
+          />
+        ) : (
+          <>
+            {/* Watermark-free public dark cartographic basemap */}
+            <TileLayer
+              attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={16}
+            />
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={16}
+            />
+          </>
+        )}
 
         {/* Spatial Corroboration Connection Lines */}
         {clusterStations.map(({ station: s, distance }) => (
@@ -135,7 +164,7 @@ export default function StationMapInner({
           const color = TONE_HEX[tone] || "#10b981";
 
           return (
-            <div key={s.station_id}>
+            <Fragment key={s.station_id}>
               {/* Outer emphasis ring for selected station */}
               {isSelected && (
                 <CircleMarker
@@ -219,7 +248,7 @@ export default function StationMapInner({
                   </div>
                 </Popup>
               </CircleMarker>
-            </div>
+            </Fragment>
           );
         })}
       </MapContainer>
